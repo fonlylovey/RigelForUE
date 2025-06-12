@@ -1,6 +1,6 @@
-#include "RigelGameMode.h"
-#include "RigelPlayerController.h"
-#include "RigelPawn.h"
+#include "Gameplay/RigelGameMode.h"
+#include "Gameplay/RigelPlayerController.h"
+#include "Gameplay/RigelPawn.h"
 
 ARigelGameMode::ARigelGameMode()
 {

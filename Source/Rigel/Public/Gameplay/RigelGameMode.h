@@ -5,7 +5,7 @@
 #include "RigelGameMode.generated.h"
 
 UCLASS()
-class ARigelGameMode : public AGameModeBase
+class RIGEL_API ARigelGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	

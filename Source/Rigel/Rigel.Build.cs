@@ -11,7 +11,6 @@ public class Rigel : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
-                "JsonUtilities"
             }
 			);
 				
@@ -19,8 +18,9 @@ public class Rigel : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
-                "Rigel/Gameplay/",
-                "Rigel/WebAPI"
+                "Rigel/Private/Gameplay",
+                "Rigel/Private/WebAPI",
+                "Rigel/Components"
             }
 			);
 			
@@ -29,6 +29,10 @@ public class Rigel : ModuleRules
 			new string[]
 			{
 				"Core",
+                "Json",
+                "UMG",
+                "JsonUtilities",
+                "EnhancedInput"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

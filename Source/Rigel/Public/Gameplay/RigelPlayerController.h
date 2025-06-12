@@ -8,7 +8,7 @@
 class URigelAPIManager;
 
 UCLASS()
-class ARigelPlayerController : public APlayerController
+class RIGEL_API ARigelPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
@@ -16,6 +16,7 @@ public:
     ARigelPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
     //接收Web端发送的消息
+    UFUNCTION()
     void OnMessageByWeb(const FString& Data);
 
     //向web端发送消息
@@ -27,6 +28,4 @@ protected:
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UPixelStreamingInput* PixelStreamingInput;
-
-    URigelAPIManager* RigelAPIManager;
 };
