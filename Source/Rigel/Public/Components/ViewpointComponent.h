@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Math/MathFwd.h"
 #include "ViewpointComponent.generated.h"
 
 class UCameraComponent;
@@ -54,6 +55,10 @@ public:
     TMap<FString, FViewpoint> ViewpointList;
 
 private:
-
-   
+    //漫游的时间
+    float Duration = 0.0;
+    //已经漫游的用时
+    float Runtime = 0.0;
+    FTransform StartTransform;
+    FTransform TargetTransform;
 };

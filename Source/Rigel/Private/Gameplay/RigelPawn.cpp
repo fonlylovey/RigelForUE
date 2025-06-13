@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "Components/ViewpointComponent.h"
 
 // Sets default values
 ARigelPawn::ARigelPawn(const FObjectInitializer& ObjectInitializer)
@@ -15,12 +16,18 @@ ARigelPawn::ARigelPawn(const FObjectInitializer& ObjectInitializer)
 	PrimaryActorTick.bCanEverTick = true;
     RootComponent = CreateDefaultSubobject<USceneComponent>("RootComponent");
     Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
+    Camera->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
     WidgetInteraction = CreateDefaultSubobject<UWidgetInteractionComponent>("WidgetInteraction");
+    WidgetInteraction->SetupAttachment(RootComponent);
+
     PivotMesh = CreateDefaultSubobject<UStaticMeshComponent>("PivotMesh");
     PivotMesh->SetVisibility(false);
     PivotMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    PivotMesh->SetupAttachment(RootComponent);
+
     FloatingMovement = CreateDefaultSubobject<UFloatingPawnMovement>("FloatingMovement");
-    FloatingMovement->UpdatedComponent = RootComponent;
+    //FloatingMovement->UpdatedComponent = RootComponent;
+    Viewpoint = CreateDefaultSubobject<UViewpointComponent>("Viewpoint");
 }
 
 // Called when the game starts or when spawned
@@ -87,6 +94,16 @@ FVector ARigelPawn::PickLocation()
         }
     }
     return pickLocation;
+}
+
+void ARigelPawn::AddViewpoint()
+{
+    Viewpoint->AddViewpoint();
+}
+
+void ARigelPawn::FlyToViewpoint(float time, const FString& ID)
+{
+    Viewpoint->RoamingToViewpoint(time, ID);
 }
 
 void ARigelPawn::Pan(const FInputActionValue& Value)

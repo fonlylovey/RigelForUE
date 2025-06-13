@@ -31,6 +31,12 @@ public:
     //鼠标当前点击位置的UE坐标
     FVector PickLocation();
 
+    UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (DisplayName = "添加当前位置到视点"), CallInEditor)
+    void AddViewpoint();
+
+    UFUNCTION(BlueprintCallable)
+    void FlyToViewpoint(float time, const FString& ID);
+
 protected:
     void Pan(const FInputActionValue& Value);
 
@@ -71,6 +77,8 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rigel")
     class UStaticMeshComponent* PivotMesh;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rigel")
+    class UViewpointComponent* Viewpoint;
     //增强输入时间映射
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
     class UInputMappingContext* DefaultMappingContext;
