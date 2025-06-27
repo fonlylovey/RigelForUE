@@ -67,6 +67,10 @@ protected:
 
     void MoveRight(const FInputActionValue& Value);
 
+    //键盘控制移动，鼠标旋转会被移动干扰，所以单独判断是鼠标左键按下才会移动，键盘的移动单独判断，实现与鼠标一样
+    void MoveForward_Key(const FInputActionValue& Value);
+    void MoveRight_Key(const FInputActionValue& Value);
+
 public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rigel")
     TObjectPtr<UCameraComponent> Camera;
@@ -93,6 +97,14 @@ public:
     //水平方向移动
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
     class UInputAction* MoveRightAction;
+
+    //水平方向移动
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
+    class UInputAction* KeyMoveForwardAction;
+
+    //水平方向移动
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
+    class UInputAction* KeyMoveRightAction;
 
     //zoom 拉近拉远
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
