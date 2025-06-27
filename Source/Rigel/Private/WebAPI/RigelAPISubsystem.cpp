@@ -1,6 +1,6 @@
-#include "WebAPI/RigelAPISubsystem.h"
+ï»¿#include "WebAPI/RigelAPISubsystem.h"
 #include "JsonObjectWrapper.h"
-
+#include "WebAPI/RigelFunctionLibrary.h"
 
 URigelAPISubsystem::URigelAPISubsystem()
 {
@@ -17,6 +17,18 @@ URigelAPISubsystem* URigelAPISubsystem::Instance()
     return apiSubsystem;
 }
 
+void URigelAPISubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+    Register(TEXT("FlyToViewpoint"), &URigelFunctionLibrary::FlyToViewpoint);
+    Register(TEXT("ExecCommandline"), &URigelFunctionLibrary::ExecCommandline);
+}
+
+void URigelAPISubsystem::Deinitialize()
+{
+    FunctionMap.Empty(0);
+    BlueprintMap.Empty(0);
+}
+
 void URigelAPISubsystem::Register(const FString& Name, Function InFunction)
 {
     FunctionMap.Add(Name, InFunction);
@@ -27,31 +39,36 @@ void URigelAPISubsystem::Register(const FString& Name, FRigelAPIDelegate InDeleg
     BlueprintMap.Add(Name, InDelegate);
 }
 
-void URigelAPISubsystem::Invoke(const FString& Name, const FString& JsonData)
-{
-    FString strText = TEXT("µ÷ÓÃº¯Êı£º") + Name;
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, strText);
-    //{"Name":"SetVisible", Param": "Sunny"}
-
-    //ºóĞøÓĞĞèÒª¿ÉÒÔÌí¼ÓÔÚÄÄ¸öÏß³ÌÖĞÖ´ĞĞµÄÂß¼­
-    //AsyncTask(ENamedThreads::GameThread, {});
-    if (FunctionMap.Contains(Name))
-    {
-        Function function = FunctionMap[Name];
-        function(JsonData);
-    }
-
-    if (BlueprintMap.Contains(Name))
-    {
-        FRigelAPIDelegate delegate = BlueprintMap[Name];
-        delegate.ExecuteIfBound(JsonData);
-    }
-}
-
 void URigelAPISubsystem::Invoke(const FString& JsonData)
 {
+    //åˆæ­¥è§£æjson
+    //{"Name":"SetVisible", "Param": {"ID":Sunny", "Name": "aaaa"}}
     FJsonObjectWrapper jsonWrapper;
     jsonWrapper.JsonObjectFromString(JsonData);
     FString strName = jsonWrapper.JsonObject->GetStringField(TEXT("Name"));
-    Invoke(strName, JsonData);
+    TSharedPtr<FJsonObject> ParamObjPtr = jsonWrapper.JsonObject->GetObjectField(TEXT("Param"));
+    FJsonObjectWrapper wrapper;
+    wrapper.JsonObject = ParamObjPtr;
+    Invoke(strName, wrapper);
+}
+
+void URigelAPISubsystem::Invoke(const FString& FunName, const FJsonObjectWrapper& ParmObj)
+{
+    FString strText = TEXT("UE call Function ï¼š") + FunName;
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, strText);
+    
+
+    //åç»­æœ‰éœ€è¦å¯ä»¥æ·»åŠ åœ¨å“ªä¸ªçº¿ç¨‹ä¸­æ‰§è¡Œçš„é€»è¾‘
+    //AsyncTask(ENamedThreads::GameThread, {});
+    if (FunctionMap.Contains(FunName))
+    {
+        Function function = FunctionMap[FunName];
+        function(ParmObj);
+    }
+
+    if (BlueprintMap.Contains(FunName))
+    {
+        FRigelAPIDelegate delegate = BlueprintMap[FunName];
+        delegate.ExecuteIfBound(ParmObj);
+    }
 }

@@ -2,12 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "Dom/JsonValue.h"
+#include "JsonObjectWrapper.h"
 #include "RigelAPISubsystem.generated.h"
 /*
 * 管理UE端的API接口
 */
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FRigelAPIDelegate, const FString&, Param);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FRigelAPIDelegate, const FJsonObjectWrapper&, Param);
 
 UCLASS(BlueprintType, Blueprintable)
 class RIGEL_API URigelAPISubsystem : public UGameInstanceSubsystem
@@ -17,8 +18,14 @@ public:
 
     static URigelAPISubsystem* Instance();
 
+    //在初始化时注册所有函数
+    virtual void Initialize(FSubsystemCollectionBase& Collection);
+
+    //取消初始化时清除所有注册函数
+    virtual void Deinitialize();
+
     //注册C++函数
-    typedef TFunction<void(const FString& Param)> Function;
+    typedef TFunction<void(const FJsonObjectWrapper& ParamJsonObj)> Function;
     void Register(const FString& Name, Function InFunction);
 
     //注册蓝图函数
@@ -40,7 +47,7 @@ public:
     //调用函数
     void Invoke(const FString& JsonData);
 
-    void Invoke(const FString& Name, const FString& JsonData);
+    void Invoke(const FString& FunName, const FJsonObjectWrapper& ParamJsonObj);
 
 
 private:

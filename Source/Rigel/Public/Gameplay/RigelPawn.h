@@ -31,6 +31,10 @@ public:
     //鼠标当前点击位置的UE坐标
     FVector PickLocation();
 
+    AActor* PickActor();
+
+    UPrimitiveComponent* PickComponent();
+
     UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (DisplayName = "添加当前位置到视点"), CallInEditor)
     void AddViewpoint();
 
@@ -38,7 +42,6 @@ public:
     void FlyToViewpoint(float time, const FString& ID);
 
 protected:
-    void Pan(const FInputActionValue& Value);
 
     void Zoom(const FInputActionValue& Value);
 
@@ -60,9 +63,9 @@ protected:
 
     void OnRightMouseRelease(const FInputActionValue& Value);
 
-    void MoveForward(const float vlaue);
+    void MoveForward(const FInputActionValue& Value);
 
-    void MoveRight(const float vlaue);
+    void MoveRight(const FInputActionValue& Value);
 
 public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rigel")
@@ -74,8 +77,8 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rigel")
     TObjectPtr<UWidgetInteractionComponent> WidgetInteraction;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rigel")
-    class UStaticMeshComponent* PivotMesh;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel")
+    class AActor* FocusActor;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rigel")
     class UViewpointComponent* Viewpoint;
@@ -85,7 +88,11 @@ public:
 
     //水平方向移动
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
-    class UInputAction* PanAction;
+    class UInputAction* MoveForwardAction;
+
+    //水平方向移动
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
+    class UInputAction* MoveRightAction;
 
     //zoom 拉近拉远
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
