@@ -132,11 +132,6 @@ UPrimitiveComponent* ARigelPawn::PickComponent()
     return pickPrimitive;
 }
 
-void ARigelPawn::AddViewpoint()
-{
-    Viewpoint->AddViewpoint();
-}
-
 void ARigelPawn::FlyToViewpoint(float time, const FString& ID)
 {
     Viewpoint->RoamingToViewpoint(time, ID);

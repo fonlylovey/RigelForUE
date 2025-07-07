@@ -35,9 +35,6 @@ public:
 
     UPrimitiveComponent* PickComponent();
 
-    UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (DisplayName = "添加当前位置到视点"), CallInEditor)
-    void AddViewpoint();
-
     UFUNCTION(BlueprintCallable)
     void FlyToViewpoint(float time, const FString& ID);
 
