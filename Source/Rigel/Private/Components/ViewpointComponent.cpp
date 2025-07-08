@@ -56,16 +56,6 @@ void UViewpointComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
     }
 }
 
-void UViewpointComponent::AddViewpoint()
-{
-    FViewpoint viewpoint;
-    viewpoint.Location = GetOwner()->GetActorLocation();
-    viewpoint.Rotation = GetOwner()->GetActorRotation();
-    viewpoint.ID = MakeUniqueObjectName(this, UViewpointComponent::StaticClass(), TEXT("Viewpoint_")).ToString();
-    viewpoint.Name = viewpoint.ID;
-    ViewpointList.Add(viewpoint.ID, viewpoint);
-}
-
 void UViewpointComponent::RoamingToViewpoint(float time, const FString& ViewpointID)
 {
     if (ViewpointList.Contains(ViewpointID))

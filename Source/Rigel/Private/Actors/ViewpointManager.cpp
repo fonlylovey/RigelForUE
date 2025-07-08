@@ -9,12 +9,19 @@ AViewpointManager::AViewpointManager()
 	PrimaryActorTick.bCanEverTick = true;
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
     RootComponent->SetMobility(EComponentMobility::Movable);
+
     Viewpoint = CreateDefaultSubobject<UViewpointComponent>(TEXT("Viewpoint"));
+
+    RenderTarget = CreateDefaultSubobject<UTextureRenderTarget2D>(TEXT("RenderTarget"));
+    
     SceneCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneCapture"));
+    SceneCapture->SetupAttachment(RootComponent);
+    SceneCapture->TextureTarget = RenderTarget;
+    SceneCapture->CaptureSource = SCS_FinalColorLDR;
+
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     Camera->SetMobility(EComponentMobility::Movable);
     Camera->SetupAttachment(RootComponent);
-    SceneCapture->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -33,5 +40,13 @@ void AViewpointManager::Tick(float DeltaTime)
 
 void AViewpointManager::AddViewpoint()
 {
-    Viewpoint->AddViewpoint();
+    FViewpoint viewpoint;
+    viewpoint.Location = GetOwner()->GetActorLocation();
+    viewpoint.Rotation = GetOwner()->GetActorRotation();
+    viewpoint.ID = MakeUniqueObjectName(this, UViewpointComponent::StaticClass(), TEXT("Viewpoint_")).ToString();
+    viewpoint.Name = viewpoint.ID;
+    SceneCapture->CaptureScene();
+    viewpoint.Thumbnail = RenderTarget;
+    ViewpointList.Add(viewpoint.ID, viewpoint);
+    ViewpointList->AddViewpoint();
 }
