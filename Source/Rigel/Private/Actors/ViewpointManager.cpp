@@ -3,6 +3,7 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AViewpointManager::AViewpointManager()
@@ -47,10 +48,11 @@ void AViewpointManager::AddViewpoint()
     FViewpoint viewpoint;
     viewpoint.Location = GetActorLocation();
     viewpoint.Rotation = GetActorRotation();
-    viewpoint.ID = MakeUniqueObjectName(this, UViewpointComponent::StaticClass(), TEXT("Viewpoint_")).ToString();
+    viewpoint.ID = MakeUniqueObjectName(this, UViewpointComponent::StaticClass(), TEXT("Viewpoint")).ToString();
     viewpoint.Name = viewpoint.ID;
     SceneCapture->CaptureScene();
-    viewpoint.Thumbnail = RenderTarget->ConstructTexture2D(GetTransientPackage(), viewpoint.Name, RF_Transient);
+    viewpoint.Thumbnail = RenderTarget->ConstructTexture2D(GetTransientPackage(), viewpoint.Name, RenderTarget->GetMaskedFlags());
+    viewpoint.Thumbnail->UpdateResource();
     ViewpointList.Add(viewpoint.ID, viewpoint);
 }
 
@@ -59,10 +61,11 @@ AViewpointManager* AViewpointManager::GetViewpointManager()
     AViewpointManager* manager = nullptr;
     if (GWorld)
     {
-        for (TActorIterator<AViewpointManager> levelIterator(GWorld, AViewpointManager::StaticClass());
-            levelIterator; ++levelIterator)
+        TArray<AActor*> outActors;
+        UGameplayStatics::GetAllActorsOfClass(GWorld, AViewpointManager::StaticClass(), outActors);
+        for (TActorIterator<AActor> Iter(GWorld, AActor::StaticClass()); Iter; ++Iter)
         {
-            AViewpointManager* actor = *levelIterator;
+            AActor* actor = *Iter;
             if (actor->GetLevel() == GWorld->PersistentLevel) {
                 manager = Cast<AViewpointManager>(actor);
                 break;

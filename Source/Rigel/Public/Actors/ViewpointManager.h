@@ -1,10 +1,10 @@
-#pragma once
+Ôªø#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ViewpointManager.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class AViewpointManager : public AActor
 {
 	GENERATED_BODY()
@@ -21,7 +21,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-    UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (DisplayName = "ÃÌº”µ±«∞Œª÷√µΩ ”µ„"), CallInEditor)
+    UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (DisplayName = "Ê∑ªÂä†ÂΩìÂâç‰ΩçÁΩÆÂà∞ËßÜÁÇπ"), CallInEditor)
     void AddViewpoint();
 
     UFUNCTION(BlueprintCallable,Category = "Rigel")
@@ -43,6 +43,6 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rigel")
     class UTextureRenderTarget2D* RenderTarget;
 
-    UPROPERTY(Category = "Rigel", EditAnywhere, BlueprintReadWrite, meta = (DisplayName = " ”µ„¡–±Ì"))
+    UPROPERTY(Category = "Rigel", EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "ËßÜÁÇπÂàóË°®"))
     TMap<FString, FViewpoint> ViewpointList;
 };
