@@ -31,7 +31,7 @@ void FDetailsViewpointCustomization::CustomizeDetails(IDetailLayoutBuilder& Deta
                 ]
             
         ];
-    builder.AddProperty(GET_MEMBER_NAME_CHECKED(UViewpointComponent, ViewpointList));
+    //builder.AddProperty(GET_MEMBER_NAME_CHECKED(UViewpointComponent, ViewpointList));
 }
 
 FReply FDetailsViewpointCustomization::OnAddViewpoint()

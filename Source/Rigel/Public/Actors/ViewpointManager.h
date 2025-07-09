@@ -24,6 +24,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (DisplayName = "添加当前位置到视点"), CallInEditor)
     void AddViewpoint();
 
+    UFUNCTION(BlueprintCallable,Category = "Rigel")
+    static AViewpointManager* GetViewpointManager();
+
+    UFUNCTION(BlueprintCallable, Category = "Rigel")
+    FViewpoint GetViewpoint(const FString& ViewpointID);
+
 public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rigel")
     class UViewpointComponent* Viewpoint;

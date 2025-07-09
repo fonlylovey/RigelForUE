@@ -23,7 +23,7 @@ ARigelPawn::ARigelPawn(const FObjectInitializer& ObjectInitializer)
 
     FloatingMovement = CreateDefaultSubobject<UFloatingPawnMovement>("FloatingMovement");
     //FloatingMovement->UpdatedComponent = RootComponent;
-    Viewpoint = CreateDefaultSubobject<UViewpointComponent>("Viewpoint");
+    ViewpointComponent = CreateDefaultSubobject<UViewpointComponent>("Viewpoint");
 }
 
 // Called when the game starts or when spawned
@@ -132,9 +132,9 @@ UPrimitiveComponent* ARigelPawn::PickComponent()
     return pickPrimitive;
 }
 
-void ARigelPawn::FlyToViewpoint(float time, const FString& ID)
+void ARigelPawn::FlyToViewpoint(float time, const FViewpoint& Viewpoint)
 {
-    Viewpoint->RoamingToViewpoint(time, ID);
+    ViewpointComponent->RoamingToViewpoint(time, Viewpoint);
 }
 
 void ARigelPawn::Zoom(const FInputActionValue& Value)

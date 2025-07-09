@@ -1,6 +1,8 @@
 #include "Actors/ViewpointManager.h"
 #include "Components/ViewpointComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
+#include "Engine/TextureRenderTarget2D.h"
+#include "EngineUtils.h"
 
 // Sets default values
 AViewpointManager::AViewpointManager()
@@ -13,7 +15,9 @@ AViewpointManager::AViewpointManager()
     Viewpoint = CreateDefaultSubobject<UViewpointComponent>(TEXT("Viewpoint"));
 
     RenderTarget = CreateDefaultSubobject<UTextureRenderTarget2D>(TEXT("RenderTarget"));
-    
+    RenderTarget->ResizeTarget(128, 128);
+    RenderTarget->UpdateResource();
+
     SceneCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneCapture"));
     SceneCapture->SetupAttachment(RootComponent);
     SceneCapture->TextureTarget = RenderTarget;
@@ -41,12 +45,39 @@ void AViewpointManager::Tick(float DeltaTime)
 void AViewpointManager::AddViewpoint()
 {
     FViewpoint viewpoint;
-    viewpoint.Location = GetOwner()->GetActorLocation();
-    viewpoint.Rotation = GetOwner()->GetActorRotation();
+    viewpoint.Location = GetActorLocation();
+    viewpoint.Rotation = GetActorRotation();
     viewpoint.ID = MakeUniqueObjectName(this, UViewpointComponent::StaticClass(), TEXT("Viewpoint_")).ToString();
     viewpoint.Name = viewpoint.ID;
     SceneCapture->CaptureScene();
-    viewpoint.Thumbnail = RenderTarget;
+    viewpoint.Thumbnail = RenderTarget->ConstructTexture2D(GetTransientPackage(), viewpoint.Name, RF_Transient);
     ViewpointList.Add(viewpoint.ID, viewpoint);
-    ViewpointList->AddViewpoint();
+}
+
+AViewpointManager* AViewpointManager::GetViewpointManager()
+{
+    AViewpointManager* manager = nullptr;
+    if (GWorld)
+    {
+        for (TActorIterator<AViewpointManager> levelIterator(GWorld, AViewpointManager::StaticClass());
+            levelIterator; ++levelIterator)
+        {
+            AViewpointManager* actor = *levelIterator;
+            if (actor->GetLevel() == GWorld->PersistentLevel) {
+                manager = Cast<AViewpointManager>(actor);
+                break;
+            }
+        }
+    }
+    else
+    {
+        manager = GWorld->SpawnActor<AViewpointManager>();
+    }
+    return manager;
+}
+
+FViewpoint AViewpointManager::GetViewpoint(const FString& ViewpointID)
+{
+    FViewpoint viewpoint = ViewpointList.FindRef(ViewpointID);
+    return viewpoint;
 }

@@ -45,9 +45,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-    void RoamingToViewpoint(float time, const FString& ViewpointID);
+    void RoamingToViewpoint(float time, const FViewpoint& Viewpoint);
 
-    void RoamingPath();
 public:
 
 

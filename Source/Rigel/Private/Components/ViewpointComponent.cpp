@@ -17,7 +17,6 @@ UViewpointComponent::UViewpointComponent()
 void UViewpointComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 	// ...
 
 }
@@ -56,17 +55,13 @@ void UViewpointComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
     }
 }
 
-void UViewpointComponent::RoamingToViewpoint(float time, const FString& ViewpointID)
+void UViewpointComponent::RoamingToViewpoint(float time, const FViewpoint& Viewpoint)
 {
-    if (ViewpointList.Contains(ViewpointID))
-    {
-        AActor* owner = GetOwner();
-        StartTransform = owner->GetTransform();
-        FViewpoint viewpoint = ViewpointList.FindRef(ViewpointID);
-        Runtime = 0.0;
-        Duration = time;
-        TargetTransform.SetLocation(viewpoint.Location);
-        TargetTransform.SetRotation(FQuat::MakeFromRotator(viewpoint.Rotation));
-        SetComponentTickEnabled(true);
-    }
+    AActor* owner = GetOwner();
+    StartTransform = owner->GetTransform();
+    Runtime = 0.0;
+    Duration = time;
+    TargetTransform.SetLocation(Viewpoint.Location);
+    TargetTransform.SetRotation(FQuat::MakeFromRotator(Viewpoint.Rotation));
+    SetComponentTickEnabled(true);
 }

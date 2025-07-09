@@ -36,7 +36,7 @@ public:
     UPrimitiveComponent* PickComponent();
 
     UFUNCTION(BlueprintCallable)
-    void FlyToViewpoint(float time, const FString& ID);
+    void FlyToViewpoint(float time, const FViewpoint& Viewpoint);
 
 protected:
 
@@ -82,7 +82,7 @@ public:
     class AActor* FocusActor;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rigel")
-    class UViewpointComponent* Viewpoint;
+    class UViewpointComponent* ViewpointComponent;
     //增强输入时间映射
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
     class UInputMappingContext* DefaultMappingContext;
