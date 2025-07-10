@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ViewpointManager.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class AViewpointManager : public AActor
 {
 	GENERATED_BODY()
@@ -21,8 +21,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-    UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (DisplayName = "���ӵ�ǰλ�õ��ӵ�"), CallInEditor)
+    UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (DisplayName = "添加当前位置到视点"), CallInEditor)
     void AddViewpoint();
+
+    UFUNCTION(BlueprintCallable,Category = "Rigel")
+    static AViewpointManager* GetViewpointManager();
+
+    UFUNCTION(BlueprintCallable, Category = "Rigel")
+    FViewpoint GetViewpoint(const FString& ViewpointID);
 
 public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rigel")
@@ -33,4 +39,10 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rigel")
     class USceneCaptureComponent2D* SceneCapture;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rigel")
+    class UTextureRenderTarget2D* RenderTarget;
+
+    UPROPERTY(Category = "Rigel", EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "视点列表"))
+    TMap<FString, FViewpoint> ViewpointList;
 };

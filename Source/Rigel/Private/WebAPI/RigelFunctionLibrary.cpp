@@ -2,15 +2,17 @@
 #include "JsonObjectWrapper.h"
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/RigelPawn.h"
+#include "Actors/ViewpointManager.h"
 
 void URigelFunctionLibrary::FlyToViewpoint(const FJsonObjectWrapper& ValueObj)
 {
     float time = ValueObj.JsonObject->GetNumberField(TEXT("Time"));
     FString viewpointID = ValueObj.JsonObject->GetStringField(TEXT("ViewPointID"));
     ARigelPawn* rigelPawn = Cast<ARigelPawn>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+    FViewpoint viewpoint = AViewpointManager::GetViewpointManager()->GetViewpoint(viewpointID);
     if (rigelPawn != nullptr)
     {
-        rigelPawn->FlyToViewpoint(time, viewpointID);
+        rigelPawn->FlyToViewpoint(time, viewpoint);
     }
 }
 

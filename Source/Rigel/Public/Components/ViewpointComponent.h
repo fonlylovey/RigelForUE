@@ -45,14 +45,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-    UFUNCTION(BlueprintCallable, Category = "Rigel", meta=(DisplayName="添加当前位置到视点"), CallInEditor)
-    void AddViewpoint();
-
-    void RoamingToViewpoint(float time, const FString& ViewpointID);
+    void RoamingToViewpoint(float time, const FViewpoint& Viewpoint);
 
 public:
-    UPROPERTY(Category = "Rigel", EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "视点列表"))
-    TMap<FString, FViewpoint> ViewpointList;
+
 
 private:
     //漫游的时间
