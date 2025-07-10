@@ -40,7 +40,6 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rigel")
     class USceneCaptureComponent2D* SceneCapture;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rigel")
     class UTextureRenderTarget2D* RenderTarget;
 
     UPROPERTY(Category = "Rigel", EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "视点列表"))
