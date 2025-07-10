@@ -43,9 +43,13 @@
       "SupportedTargetPlatforms": null
     },
     {
-      "Name": "EnhancedInput",
-      "Enabled": true,
-      "SupportedTargetPlatforms": null
+        "Name": "EnhancedInput",
+        "Enabled": true,
+        "SupportedTargetPlatforms": null
+    },
+    {
+        "Name": "GeoReferencing",
+        "Enabled": true
     }
   ],
   "SupportedTargetPlatforms": null
