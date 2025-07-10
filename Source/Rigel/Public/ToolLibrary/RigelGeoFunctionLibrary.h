@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "AbcimGeoFunctionLibrary.generated.h"
+#include "RigelGeoFunctionLibrary.generated.h"
 
 class AGeoReferencingSystem;
 class UStaticMeshComponent;
@@ -12,8 +12,8 @@ class UStaticMeshComponent;
 /**
  * 
  */
-UCLASS(BlueprintType, meta = (ScriptName = "AbcimGeoLibrary"))
-class ABCIMTOOLEDITOR_API UAbcimGeoFunctionLibrary : public UBlueprintFunctionLibrary
+UCLASS(BlueprintType, meta = (ScriptName = "Rigel"))
+class RIGEL_API URigelGeoFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

@@ -14,6 +14,8 @@ public class RigelEditor: ModuleRules
                 "Slate",
                 "SlateCore",
                 "Rigel",
+                "UnrealEd",
+                "SceneOutliner",
                 "PropertyEditor"
                
                // ... add private dependencies that you statically link with here ...

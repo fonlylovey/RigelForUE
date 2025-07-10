@@ -1,14 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AbcimGeoFunctionLibrary.h"
+#include "ToolLibrary/RigelGeoFunctionLibrary.h"
 #include "GeoReferencingSystem.h"
 #include "MeshDescription.h"
 #include "StaticMeshAttributes.h"
 
-void UAbcimGeoFunctionLibrary::ProjectMeshesToEngine(AGeoReferencingSystem* GeoReferencingSystem, UStaticMeshComponent* StaticMeshComponent, const FVector Offset)
+void URigelGeoFunctionLibrary::ProjectMeshesToEngine(AGeoReferencingSystem* GeoReferencingSystem, UStaticMeshComponent* StaticMeshComponent, const FVector Offset)
 {
-	UE_LOG(LogTemp, Warning, TEXT("UAbcimGeoFunctionLibrary::ProjectMeshesToEngine"));
 
 	FTransform ComponentToWorld = StaticMeshComponent->GetComponentTransform();
 	// UE_LOG(LogTemp, Warning, TEXT("ComponentToWorld0:(%f, %f, %f)"), ComponentToWorld.GetTranslation().X, ComponentToWorld.GetTranslation().Y, ComponentToWorld.GetTranslation().Z);

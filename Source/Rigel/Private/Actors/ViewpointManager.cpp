@@ -61,9 +61,7 @@ AViewpointManager* AViewpointManager::GetViewpointManager()
     AViewpointManager* manager = nullptr;
     if (GWorld)
     {
-        TArray<AActor*> outActors;
-        UGameplayStatics::GetAllActorsOfClass(GWorld, AViewpointManager::StaticClass(), outActors);
-        for (TActorIterator<AActor> Iter(GWorld, AActor::StaticClass()); Iter; ++Iter)
+        for (TActorIterator<AActor> Iter(GWorld, AViewpointManager::StaticClass()); Iter; ++Iter)
         {
             AActor* actor = *Iter;
             if (actor->GetLevel() == GWorld->PersistentLevel) {
