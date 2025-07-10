@@ -32,7 +32,8 @@ public class Rigel : ModuleRules
                 "Json",
                 "UMG",
                 "JsonUtilities",
-                "EnhancedInput"
+                "EnhancedInput",
+                "GeoReferencing"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -45,7 +46,9 @@ public class Rigel : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-                "PixelStreaming"
+                "PixelStreaming",
+                "MeshDescription",
+                "StaticMeshDescription",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
