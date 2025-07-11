@@ -9,7 +9,7 @@
 class AGeoReferencingSystem;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class EARTHBUILDER_API UGeoAnchorComponent : public UActorComponent
+class RIGEL_API UGeoAnchorComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

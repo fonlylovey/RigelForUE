@@ -33,7 +33,9 @@ public class Rigel : ModuleRules
                 "UMG",
                 "JsonUtilities",
                 "EnhancedInput",
-                "GeoReferencing"
+                "GeoReferencing",
+                "PCG",
+                "VectorLoader",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

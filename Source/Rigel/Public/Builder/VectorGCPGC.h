@@ -23,7 +23,7 @@ struct FVectorPBGMap
 
 
 UCLASS()
-class EARTHBUILDER_API AVectorGCPGC : public AActor
+class RIGEL_API AVectorGCPGC : public AActor
 {
 	GENERATED_BODY()
 

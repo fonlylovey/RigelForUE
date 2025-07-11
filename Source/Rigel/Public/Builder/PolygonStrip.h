@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PolygonBase.h"
+#include "Builder/PolygonBase.h"
 #include "PolygonStrip.generated.h"
 
 class USplineMeshComponent;
@@ -11,7 +11,7 @@ class USplineMeshComponent;
  * 
  */
 UCLASS()
-class EARTHBUILDER_API APolygonStrip : public APolygonBase
+class RIGEL_API APolygonStrip : public APolygonBase
 {
 	GENERATED_BODY()
 	

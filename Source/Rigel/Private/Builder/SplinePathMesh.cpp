@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SplinePathMesh.h"
+#include "Builder/SplinePathMesh.h"
 #include "Components/SplineComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 

@@ -2,18 +2,23 @@
   "FileVersion": 3,
   "Version": 1,
   "VersionName": "1.0",
-  "Modules": [
-    {
-      "Name": "Rigel",
-      "Type": "Runtime",
-      "LoadingPhase": "Default"
-    },
-    {
-      "Name": "RigelEditor",
-      "Type": "Editor",
-      "LoadingPhase": "Default"
-    }
-  ],
+    "Modules": [
+        {
+            "Name": "Rigel",
+            "Type": "Runtime",
+            "LoadingPhase": "Default"
+        },
+        {
+            "Name": "RigelEditor",
+            "Type": "Editor",
+            "LoadingPhase": "Default"
+        },
+        {
+            "Name": "VectorLoader",
+            "Type": "Runtime",
+            "LoadingPhase": "Default"
+        }
+    ],
   "FriendlyName": "Rigel",
   "Description": "",
   "Category": "Other",
@@ -25,32 +30,36 @@
   "CanContainContent": "true",
   "Installed": false,
   "IsBetaVersion": false,
-  "Plugins": [
-    {
-      "Name": "CesiumForUnreal",
-      "Enabled": true,
-      "SupportedTargetPlatforms": [
-        "Win64",
-        "Mac",
-        "Linux",
-        "Android",
-        "IOS"
-      ]
-    },
-    {
-      "Name": "PixelStreaming",
-      "Enabled": true,
-      "SupportedTargetPlatforms": null
-    },
-    {
-        "Name": "EnhancedInput",
-        "Enabled": true,
-        "SupportedTargetPlatforms": null
-    },
-    {
-        "Name": "GeoReferencing",
-        "Enabled": true
-    }
-  ],
+    "Plugins": [
+        {
+            "Name": "CesiumForUnreal",
+            "Enabled": true,
+            "SupportedTargetPlatforms": [
+                "Win64",
+                "Mac",
+                "Linux",
+                "Android",
+                "IOS"
+            ]
+        },
+        {
+            "Name": "PixelStreaming",
+            "Enabled": true,
+            "SupportedTargetPlatforms": null
+        },
+        {
+            "Name": "EnhancedInput",
+            "Enabled": true,
+            "SupportedTargetPlatforms": null
+        },
+        {
+            "Name": "GeoReferencing",
+            "Enabled": true
+        },
+        {
+            "Name": "ProceduralMeshComponent",
+            "Enabled": true
+        }
+    ],
   "SupportedTargetPlatforms": null
 }

@@ -16,7 +16,7 @@ enum class EDrawMode : uint8
 };
 
 UCLASS()
-class EARTHBUILDER_API APolygonBase : public AActor
+class RIGEL_API APolygonBase : public AActor
 {
 	GENERATED_BODY()
 	

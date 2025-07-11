@@ -10,7 +10,7 @@
 class USplineComponent;
 
 UCLASS()
-class EARTHBUILDER_API ASplinePathMesh : public AActor
+class RIGEL_API ASplinePathMesh : public AActor
 {
 	GENERATED_BODY()
 	
