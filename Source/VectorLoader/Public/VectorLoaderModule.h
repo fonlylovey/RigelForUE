@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleInterface.h"
 
-class FVectorLoader : public FDefaultModuleImpl
+class FVectorLoader : public IModuleInterface
 {
 public:
 	virtual void StartupModule() override;

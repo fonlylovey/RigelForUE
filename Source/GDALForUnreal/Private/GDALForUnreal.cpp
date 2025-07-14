@@ -19,7 +19,7 @@ void* FGDALForUnrealModule::GDALLibraryHandle = nullptr;
 void FGDALForUnrealModule::StartupModule()
 {
 #if PLATFORM_WINDOWS
-	FString BaseDir = IPluginManager::Get().FindPlugin("GDALForUnreal")->GetBaseDir();
+	FString BaseDir = IPluginManager::Get().FindPlugin("Rigel")->GetBaseDir();
 	FString LibraryPath;
 
 

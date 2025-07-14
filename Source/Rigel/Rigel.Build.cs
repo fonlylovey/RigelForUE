@@ -20,7 +20,6 @@ public class Rigel : ModuleRules
 				// ... add other private include paths required here ...
                 "Rigel/Private/Gameplay",
                 "Rigel/Private/WebAPI",
-                "Rigel/Components"
             }
 			);
 			
@@ -34,8 +33,7 @@ public class Rigel : ModuleRules
                 "JsonUtilities",
                 "EnhancedInput",
                 "GeoReferencing",
-                "PCG",
-                "VectorLoader",
+                "PCG"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -51,6 +49,8 @@ public class Rigel : ModuleRules
                 "PixelStreaming",
                 "MeshDescription",
                 "StaticMeshDescription",
+                "VectorLoader",
+                "GDALForUnreal"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

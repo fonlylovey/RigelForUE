@@ -14,8 +14,13 @@
             "LoadingPhase": "Default"
         },
         {
+            "Name": "GDALForUnreal",
+            "Type": "Editor",
+            "LoadingPhase": "Default"
+        },
+        {
             "Name": "VectorLoader",
-            "Type": "Runtime",
+            "Type": "Editor",
             "LoadingPhase": "Default"
         }
     ],
@@ -27,7 +32,7 @@
   "DocsURL": "",
   "MarketplaceURL": "",
   "SupportURL": "",
-  "CanContainContent": "true",
+  "CanContainContent": true,
   "Installed": false,
   "IsBetaVersion": false,
     "Plugins": [
@@ -58,6 +63,10 @@
         },
         {
             "Name": "ProceduralMeshComponent",
+            "Enabled": true
+        },
+        {
+            "Name": "PCG",
             "Enabled": true
         }
     ],
