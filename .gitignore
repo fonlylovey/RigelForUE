@@ -72,3 +72,5 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+/Source/GDALForUnreal/bin/Win64/gdald.dll
+/Source/GDALForUnreal/bin/Win64/gdald.dll
