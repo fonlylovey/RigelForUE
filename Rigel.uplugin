@@ -68,6 +68,10 @@
         {
             "Name": "PCG",
             "Enabled": true
+        },
+        {
+            "Name": "WebUI",
+            "Enabled": true
         }
     ],
   "SupportedTargetPlatforms": null

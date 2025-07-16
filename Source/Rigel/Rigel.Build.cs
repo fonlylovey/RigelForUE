@@ -33,7 +33,9 @@ public class Rigel : ModuleRules
                 "JsonUtilities",
                 "EnhancedInput",
                 "GeoReferencing",
-                "PCG"
+                "PCG",
+                "WebUI",
+                "JsonLibrary"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
