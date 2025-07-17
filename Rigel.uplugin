@@ -72,6 +72,10 @@
         {
             "Name": "WebUI",
             "Enabled": true
+        },
+        {
+            "Name": "JsonLibrary",
+            "Enabled": true
         }
     ],
   "SupportedTargetPlatforms": null

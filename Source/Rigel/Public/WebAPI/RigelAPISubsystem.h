@@ -1,14 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Dom/JsonValue.h"
-#include "JsonObjectWrapper.h"
+#include "JsonLibraryValue.h"
 #include "RigelAPISubsystem.generated.h"
 /*
 * 管理UE端的API接口
 */
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FRigelAPIDelegate, const FJsonObjectWrapper&, Param);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FRigelAPIDelegate, const FJsonLibraryObject&, Value);
 
 UCLASS(BlueprintType, Blueprintable)
 class RIGEL_API URigelAPISubsystem : public UGameInstanceSubsystem
@@ -25,7 +24,7 @@ public:
     virtual void Deinitialize();
 
     //注册C++函数
-    typedef TFunction<void(const FJsonObjectWrapper& ParamJsonObj)> Function;
+    typedef TFunction<void(const FJsonLibraryObject& DataObj)> Function;
     void Register(const FString& Name, Function InFunction);
 
     //注册蓝图函数
@@ -44,10 +43,13 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Rigel")
     void RegisterString(const FString& FunctionName, const FString& value);
     */
-    //调用函数
+
+    //调用函数 像素流送一般调用这个
+    //{"Name":"SetVisible", "Data": {"ID":actor_1", "Visible": true}}
     void Invoke(const FString& JsonData);
 
-    void Invoke(const FString& FunName, const FJsonObjectWrapper& ParamJsonObj);
+    //web UI一般调用这个
+    void Invoke(const FString& FunName, const FJsonLibraryObject& DataObj);
 
 
 private:

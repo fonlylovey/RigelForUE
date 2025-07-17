@@ -1,8 +1,14 @@
-#include "WebAPI/WebWidget.h"
+ï»¿#include "WebAPI/WebWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerController.h"
 #include "UObject/ScriptDelegates.h"
+#include "Components/TextBlock.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Internationalization/Internationalization.h"
+#include "Blueprint/WidgetTree.h"
+#include "WebAPI/RigelAPISubsystem.h"
 
+#define LOCTEXT_NAMESPACE "WebWidget"
 
 UWebWidget::UWebWidget(const FObjectInitializer& ObjectInitializer)
     :Super(ObjectInitializer)
@@ -12,25 +18,15 @@ UWebWidget::UWebWidget(const FObjectInitializer& ObjectInitializer)
 
 void UWebWidget::NativeConstruct()
 {
-    // ´´½¨ CanvasPanel
-    CanvasPanel = NewObject<UCanvasPanel>(this);
-    if (CanvasPanel)
+    Super::NativeConstruct();
+
+    if (WebInterface != nullptr)
     {
-        // ÉèÖÃÃæ°åÊôÐÔ
-        CanvasPanel->SetVisibility(ESlateVisibility::Visible);
-
-        // Ìí¼Óµ½¸ù×é¼þ
-        if (UPanelWidget* RootPanel = Cast<UPanelWidget>(GetRootWidget()))
-        {
-            RootPanel->AddChild(CanvasPanel);
-        }
+        //å¤šè¯­è¨€è¾“å…¥,å‰ç«¯è¾“å…¥æ ä¸èƒ½è¾“å…¥ä¸­æ–‡é—®é¢˜
+        WebInterface->EnableIME();
+        WebInterface->OnInterfaceEvent.AddDynamic(this, &UWebWidget::OnInterfaceEvent);
     }
-
-    WebInterface = NewObject<UWebInterface>(this);
-    CanvasPanel->AddChildToCanvas(WebInterface);
-    //¶àÓïÑÔÊäÈë,Ç°¶ËÊäÈëÀ¸²»ÄÜÊäÈëÖÐÎÄÎÊÌâ
-    WebInterface->EnableIME();
-    WebInterface->OnInterfaceEvent.AddDynamic(this, &UWebWidget::OnInterfaceEvent);
+    
    
     APlayerController* Controller = UGameplayStatics::GetPlayerController(GWorld, 0);
     FInputModeGameAndUI inputMode;
@@ -42,16 +38,18 @@ void UWebWidget::NativeConstruct()
 
 void UWebWidget::OnInterfaceEvent(const FName Name, FJsonLibraryValue Data, FWebInterfaceCallback Callback)
 {
-
+    URigelAPISubsystem* subsystem = GetWorld()->GetGameInstance()->GetSubsystem<URigelAPISubsystem>();
+    FJsonLibraryObject rootObj = FJsonLibraryObject::Parse(Data.GetString());
+    subsystem->Invoke(Name.ToString(), rootObj.GetObject(TEXT("Data")));
 }
 
 
 void UWebWidget::LoadHTML(const FString& URL)
 {
-    WebInterface->Load(URL);
+    WebInterface->LoadURL(URL);
 }
 
 void UWebWidget::LoadFile(const FString& ContentFile)
 {
-    WebInterface->LoadContent(ContentFile);
+    WebInterface->LoadFile(ContentFile, EWebInterfaceDirectory::Content);
 }

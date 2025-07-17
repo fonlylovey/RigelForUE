@@ -18,23 +18,25 @@ public:
 
     UWebWidget(const FObjectInitializer& ObjectInitializer);
 
-protected:
-
-    virtual void NativeConstruct() override;
-
-    UFUNCTION(BlueprintCallable)
-    void OnInterfaceEvent(const FName Name, FJsonLibraryValue Data, FWebInterfaceCallback Callback);
-
     UFUNCTION(BlueprintCallable)
     void LoadHTML(const FString& URL);
 
     UFUNCTION(BlueprintCallable)
     void LoadFile(const FString& ContentFile);
 
+protected:
+
+    virtual void NativeConstruct() override;
+
+    //virtual TSharedRef<SWidget> RebuildWidget() override;
+
+    UFUNCTION(BlueprintCallable)
+    void OnInterfaceEvent(const FName Name, FJsonLibraryValue Data, FWebInterfaceCallback Callback);
+
 public:
-    UPROPERTY(EditAnywhere)
-    UCanvasPanel* CanvasPanel;
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+    class UWebInterface* WebInterface;
 private:
-    UWebInterface* WebInterface;
+    
    
 };

@@ -28,7 +28,6 @@ public class Rigel : ModuleRules
 			new string[]
 			{
 				"Core",
-                "Json",
                 "UMG",
                 "JsonUtilities",
                 "EnhancedInput",

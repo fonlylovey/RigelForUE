@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "JsonLibraryValue.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "RigelFunctionLibrary.generated.h"
 
@@ -11,14 +12,14 @@ class RIGEL_API URigelFunctionLibrary : public UBlueprintFunctionLibrary
 
 public:
     UFUNCTION(BlueprintCallable)
-    static void FlyToViewpoint(const FJsonObjectWrapper& ValueObj);
+    static void FlyToViewpoint(const FJsonLibraryObject& Value);
 
     UFUNCTION(BlueprintCallable)
-    static void SeActorVisible(const FJsonObjectWrapper& ValueObj);
+    static void SeActorVisible(const FJsonLibraryObject& Value);
 
     UFUNCTION(BlueprintCallable)
-    static void ExecCommandline(const FJsonObjectWrapper& ValueObj);
+    static void ExecCommandline(const FJsonLibraryObject& Value);
 
     UFUNCTION(BlueprintCallable)
-    static void ExecCommand(const FString& ValueObj);
+    static void ExecCommand(const FString& Value);
 };
