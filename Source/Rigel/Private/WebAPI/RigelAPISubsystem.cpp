@@ -21,6 +21,7 @@ void URigelAPISubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     Register(TEXT("FlyToViewpoint"), &URigelFunctionLibrary::FlyToViewpoint);
     Register(TEXT("ExecCommandline"), &URigelFunctionLibrary::ExecCommandline);
+    Register(TEXT("SetActorVisible"), &URigelFunctionLibrary::SetActorVisible);
 }
 
 void URigelAPISubsystem::Deinitialize()
@@ -52,8 +53,8 @@ void URigelAPISubsystem::Invoke(const FString& JsonData)
 
 void URigelAPISubsystem::Invoke(const FString& FunName, const FJsonLibraryObject& DataObj)
 {
-    FString strText = TEXT("UE call Function ：") + FunName;
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, strText);
+    //FString strText = TEXT("UE call Function ：") + FunName;
+   // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, strText);
 
     //dataObj = {"Data": {"ID":Sunny", "Name": "aaaa"}}  需要直接传递{"ID":Sunny", "Name": "aaaa"}
     // 

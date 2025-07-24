@@ -51,6 +51,7 @@ void UViewpointComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
         {
             GetOwner()->SetActorLocation(deltaTransform.GetLocation());
             PlayerController->SetControlRotation(deltaTransform.Rotator());
+            GetOwner()->SetActorTransform(deltaTransform);
         }
     }
 }

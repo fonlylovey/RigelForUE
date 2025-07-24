@@ -38,9 +38,20 @@ void UWebWidget::NativeConstruct()
 
 void UWebWidget::OnInterfaceEvent(const FName Name, FJsonLibraryValue Data, FWebInterfaceCallback Callback)
 {
+    //统一前端调用方式，函数名和参数都在json中
     URigelAPISubsystem* subsystem = GetWorld()->GetGameInstance()->GetSubsystem<URigelAPISubsystem>();
-    FJsonLibraryObject rootObj = FJsonLibraryObject::Parse(Data.GetString());
-    subsystem->Invoke(Name.ToString(), rootObj.GetObject(TEXT("Data")));
+    FJsonLibraryObject DataObj;
+    if (Data.GetType() == EJsonLibraryType::String)
+    {
+        FJsonLibraryObject rootObj = FJsonLibraryObject::Parse(Data.GetString());
+        DataObj = rootObj.GetObject("Data");
+    }
+    else
+    {
+        FJsonLibraryObject rootObj = Data.GetObject();
+        DataObj = rootObj.GetObject("Data");
+    }
+    subsystem->Invoke(Name.ToString(), DataObj);
 }
 
 

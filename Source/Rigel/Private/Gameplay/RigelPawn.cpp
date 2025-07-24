@@ -64,8 +64,8 @@ void ARigelPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputCom
         EnhancedInputComponent->BindAction(RightMouseReleaseAction, ETriggerEvent::Triggered, this, &ARigelPawn::OnRightMouseRelease);
         EnhancedInputComponent->BindAction(MoveForwardAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveForward);
         EnhancedInputComponent->BindAction(MoveRightAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveRight);
-        EnhancedInputComponent->BindAction(KeyMoveForwardAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveForward_Key);
-        EnhancedInputComponent->BindAction(KeyMoveRightAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveRight_Key);
+        //EnhancedInputComponent->BindAction(KeyMoveForwardAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveForward_Key);
+        //EnhancedInputComponent->BindAction(KeyMoveRightAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveRight_Key);
 
     }
 }
@@ -174,7 +174,7 @@ void ARigelPawn::YawRotation(const FInputActionValue& Value)
     //如果没有点击到具体坐标，就自传
     if (PickWorldLocation.Equals(FVector::ZeroVector))
     {
-        FRotator rotateRotation = UKismetMathLibrary::ComposeRotators(GetController()->GetControlRotation(), FRotator(0, deltaAngle, 0));
+        FRotator rotateRotation = UKismetMathLibrary::ComposeRotators(GetActorRotation(), FRotator(0, deltaAngle, 0));
        
         if (rotateRotation.Pitch >= -85.0 && rotateRotation.Pitch <= 0)
         {
@@ -193,8 +193,9 @@ void ARigelPawn::YawRotation(const FInputActionValue& Value)
 
         //计算pawn朝向
         FRotator rotatorPick = UKismetMathLibrary::RotatorFromAxisAndAngle(FVector::UpVector, deltaAngle);
-        FRotator rotateRotation = UKismetMathLibrary::ComposeRotators(GetController()->GetControlRotation(), rotatorPick);
+        FRotator rotateRotation = UKismetMathLibrary::ComposeRotators(GetActorRotation(), rotatorPick);
         GetController()->SetControlRotation(rotateRotation);
+        //SetActorRotation(rotateRotation);
     }
    
 }
@@ -214,14 +215,17 @@ void ARigelPawn::PitchRotation(const FInputActionValue& Value)
     FVector2D delta = Value.Get<FVector2D>();
     float deltaAngle = delta.X * 3;
 
+    FRotator ControllerRotator = GetController()->GetControlRotation();
+
     //如果没有点击到具体坐标，就自传
     if (PickWorldLocation.Equals(FVector::ZeroVector))
     {
-        FRotator rotateRotation = UKismetMathLibrary::ComposeRotators(GetController()->GetControlRotation(), FRotator(deltaAngle, 0, 0));
+        FRotator rotateRotation = UKismetMathLibrary::ComposeRotators(GetActorRotation(), FRotator(deltaAngle, 0, 0));
         GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, rotateRotation.ToString());
         if (rotateRotation.Pitch >= -85.0 && rotateRotation.Pitch <= 0)
         {
-            FRotator newRotator = FRotator(FMath::Clamp(rotateRotation.Pitch, -85.1, 0), rotateRotation.Yaw, 0.0);
+            //这个地方yaw角度要用Controller，不能用计算的rotateRotation
+            FRotator newRotator = FRotator(FMath::Clamp(rotateRotation.Pitch, -85.1, 0), ControllerRotator.Yaw, 0.0);
             GetController()->SetControlRotation(newRotator);
             
         }
@@ -237,16 +241,15 @@ void ARigelPawn::PitchRotation(const FInputActionValue& Value)
         FVector MovementVector = FRotationMatrix(ControlSpaceRot).GetScaledAxis(EAxis::Y);
         FVector newLocation = UKismetMathLibrary::RotateAngleAxis(PawnDir, deltaAngle, MovementVector);
 
-        AActor* ControllerActor = GetController();
-
         //计算Pawn的角度
-        FRotator rotatorPick = UKismetMathLibrary::RotatorFromAxisAndAngle(ControllerActor->GetActorRightVector(), deltaAngle);
-        FRotator rotateRotation = UKismetMathLibrary::ComposeRotators(GetController()->GetControlRotation(), rotatorPick);
+        
+        FRotator rotatorPick = UKismetMathLibrary::RotatorFromAxisAndAngle(GetActorRightVector(), deltaAngle);
+        FRotator rotateRotation = UKismetMathLibrary::ComposeRotators(GetActorRotation(), rotatorPick);
         if (rotateRotation.Pitch >= -85.0 && rotateRotation.Pitch <= 0)
         {
-            FRotator newRotator = FRotator(FMath::Clamp(rotateRotation.Pitch, -85.1, 0), rotateRotation.Yaw, 0.0);
+            FRotator newRotator = FRotator(FMath::Clamp(rotateRotation.Pitch, -85.1, 0), ControllerRotator.Yaw, 0.0);
+            SetActorLocation(PickWorldLocation + newLocation);
             GetController()->SetControlRotation(newRotator);
-            SetActorLocation(PickWorldLocation + newLocation, false);
         }
     }
    

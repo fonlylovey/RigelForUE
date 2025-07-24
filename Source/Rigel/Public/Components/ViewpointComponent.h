@@ -22,10 +22,10 @@ public:
     UTexture2D* Thumbnail;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FVector Location;
+    FVector Location = FVector::ZeroVector;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FRotator Rotation;
+    FRotator Rotation = FRotator::ZeroRotator;
 };
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))

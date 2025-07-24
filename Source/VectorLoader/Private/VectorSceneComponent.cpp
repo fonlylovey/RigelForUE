@@ -14,7 +14,7 @@ UVectorSceneComponent::UVectorSceneComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	
-    FString str = TEXT("/VectorLoader/Materials/M_VectorBase.M_VectorBase");
+    FString str = TEXT("/Rigel/Materials/M_VectorBase.M_VectorBase");
     BaseMaterial = Cast<UMaterial>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *str));
 }
 

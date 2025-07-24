@@ -9,11 +9,11 @@ public class VectorLoader: ModuleRules
 
         PublicIncludePaths.AddRange(
             new string[] {
-                Path.Combine(PluginDirectory, "../ThirdParty/include")
+                //Path.Combine(PluginDirectory, "../ThirdParty/include")
             }
         );
 
-        string libPath = Path.Combine(PluginDirectory, "../ThirdParty/lib/");
+        //string libPath = Path.Combine(PluginDirectory, "../ThirdParty/lib/");
         //string debugPostfix = "d";
         //string libPostfix = ".lib";
 

@@ -8,7 +8,7 @@
 
 void URigelGeoFunctionLibrary::ProjectMeshesToEngine(AGeoReferencingSystem* GeoReferencingSystem, UStaticMeshComponent* StaticMeshComponent, const FVector Offset)
 {
-
+#if WITH_EDITOR
 	FTransform ComponentToWorld = StaticMeshComponent->GetComponentTransform();
 	// UE_LOG(LogTemp, Warning, TEXT("ComponentToWorld0:(%f, %f, %f)"), ComponentToWorld.GetTranslation().X, ComponentToWorld.GetTranslation().Y, ComponentToWorld.GetTranslation().Z);
 
@@ -53,4 +53,5 @@ void URigelGeoFunctionLibrary::ProjectMeshesToEngine(AGeoReferencingSystem* GeoR
 	
 	StaticMesh->Build();
 	StaticMesh->MarkPackageDirty();
+#endif
 }

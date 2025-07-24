@@ -5,6 +5,7 @@
 #include "JsonLibraryValue.h"
 #include "JsonLibraryObject.h"
 #include "Components/ViewpointComponent.h"
+#include "WebAPI/ActorManager.h"
 
 void URigelFunctionLibrary::FlyToViewpoint(const FJsonLibraryObject& Value)
 {
@@ -18,10 +19,18 @@ void URigelFunctionLibrary::FlyToViewpoint(const FJsonLibraryObject& Value)
     }
 }
 
-void URigelFunctionLibrary::SeActorVisible(const FJsonLibraryObject& Value)
+void URigelFunctionLibrary::SetActorVisible(const FJsonLibraryObject& Value)
 {
+    FString strName = Value.GetString(TEXT("Name"));
     bool isShow = Value.GetBoolean(TEXT("Visible"));
-    
+    if (!strName.IsEmpty())
+    {
+        AActor* actor = AActorManager::GetActorManager()->FindActor(strName);
+        if (actor != nullptr)
+        {   
+            actor->SetActorHiddenInGame(!isShow);
+        }
+    }
 }
 
 void URigelFunctionLibrary::ExecCommandline(const FJsonLibraryObject& Value)

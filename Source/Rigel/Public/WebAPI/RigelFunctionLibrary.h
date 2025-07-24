@@ -15,7 +15,7 @@ public:
     static void FlyToViewpoint(const FJsonLibraryObject& Value);
 
     UFUNCTION(BlueprintCallable)
-    static void SeActorVisible(const FJsonLibraryObject& Value);
+    static void SetActorVisible(const FJsonLibraryObject& Value);
 
     UFUNCTION(BlueprintCallable)
     static void ExecCommandline(const FJsonLibraryObject& Value);
