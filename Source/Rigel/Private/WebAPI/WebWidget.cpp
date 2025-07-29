@@ -27,7 +27,6 @@ void UWebWidget::NativeConstruct()
         WebInterface->OnInterfaceEvent.AddDynamic(this, &UWebWidget::OnInterfaceEvent);
     }
     
-   
     APlayerController* Controller = UGameplayStatics::GetPlayerController(GWorld, 0);
     FInputModeGameAndUI inputMode;
     //inputMode.SetWidgetToFocus(WebInterface);

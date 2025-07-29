@@ -55,6 +55,8 @@ private:
     float Duration = 0.0;
     //已经漫游的用时
     float Runtime = 0.0;
+
+    bool Playing = false;
     FTransform StartTransform;
     FTransform TargetTransform;
 };

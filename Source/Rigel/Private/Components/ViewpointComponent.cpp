@@ -26,32 +26,46 @@ void UViewpointComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	// ...
-    if (Duration > 0)
+    if (Playing)
     {
         APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-        
-        Runtime += DeltaTime;
-        float rotio = Runtime / Duration;
-        //由于rotio基本不可能刚好到达模板位置，所以结束时，设置为TargetTransform
-        if (rotio >= 1.0)
+        //如果动画时间为零，直接设置到终点
+        if (Duration == 0.0)
         {
-            SetComponentTickEnabled(false);
-            if (PlayerController != nullptr)
-            {
-                GetOwner()->SetActorLocation(TargetTransform.GetLocation());
-                PlayerController->SetControlRotation(TargetTransform.Rotator());
-            }
             Duration = 0.0;
             Runtime = 0.0;
-            return;
+            Playing = false;
+            SetComponentTickEnabled(false);
+            GetOwner()->SetActorLocation(TargetTransform.GetLocation());
+            PlayerController->SetControlRotation(TargetTransform.Rotator());
+            GetOwner()->SetActorTransform(TargetTransform);
         }
-
-        FTransform deltaTransform = UKismetMathLibrary::TLerp(StartTransform, TargetTransform, rotio, ELerpInterpolationMode::QuatInterp);
-        if (PlayerController != nullptr)
+        else
         {
-            GetOwner()->SetActorLocation(deltaTransform.GetLocation());
-            PlayerController->SetControlRotation(deltaTransform.Rotator());
-            GetOwner()->SetActorTransform(deltaTransform);
+            Runtime += DeltaTime;
+            float rotio = Runtime / Duration;
+            //由于rotio基本不可能刚好到达模板位置，所以结束时，设置为TargetTransform
+            if (rotio >= 1.0)
+            {
+
+                if (PlayerController != nullptr)
+                {
+                    GetOwner()->SetActorLocation(TargetTransform.GetLocation());
+                    PlayerController->SetControlRotation(TargetTransform.Rotator());
+                }
+                Duration = 0.0;
+                Runtime = 0.0;
+                Playing = false;
+                SetComponentTickEnabled(false);
+            }
+
+            FTransform deltaTransform = UKismetMathLibrary::TLerp(StartTransform, TargetTransform, rotio, ELerpInterpolationMode::QuatInterp);
+            if (PlayerController != nullptr)
+            {
+                GetOwner()->SetActorLocation(deltaTransform.GetLocation());
+                PlayerController->SetControlRotation(deltaTransform.Rotator());
+                GetOwner()->SetActorTransform(deltaTransform);
+            }
         }
     }
 }
@@ -64,5 +78,6 @@ void UViewpointComponent::RoamingToViewpoint(float time, const FViewpoint& Viewp
     Duration = time;
     TargetTransform.SetLocation(Viewpoint.Location);
     TargetTransform.SetRotation(FQuat::MakeFromRotator(Viewpoint.Rotation));
+    Playing = true;
     SetComponentTickEnabled(true);
 }

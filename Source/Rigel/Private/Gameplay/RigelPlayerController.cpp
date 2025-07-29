@@ -12,9 +12,7 @@ void ARigelPlayerController::OnMessageByWeb(const FString& Data)
 {
     //{Name:SetWeather,"Param": "Sunny"}
     GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, Data);
-    URigelAPISubsystem* subsystem = GetWorld()->GetGameInstance()->GetSubsystem<URigelAPISubsystem>();
-    subsystem->Invoke(Data);
-    URigelAPISubsystem::Instance();
+    URigelAPISubsystem::RigelAPISubsystem()->Invoke(Data);
 }
 
 void ARigelPlayerController::SendMessageToWeb(const FString& Data)

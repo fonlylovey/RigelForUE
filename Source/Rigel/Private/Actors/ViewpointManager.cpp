@@ -54,6 +54,7 @@ void AViewpointManager::AddViewpoint()
     viewpoint.Thumbnail = RenderTarget->ConstructTexture2D(GetTransientPackage(), viewpoint.Name, RenderTarget->GetMaskedFlags());
     viewpoint.Thumbnail->UpdateResource();
     ViewpointList.Add(viewpoint.ID, viewpoint);
+    RenderTarget->AssetImportData = nullptr;
 }
 
 AViewpointManager* AViewpointManager::GetViewpointManager()

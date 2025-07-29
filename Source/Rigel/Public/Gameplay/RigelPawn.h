@@ -131,6 +131,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
     class UInputAction* RightMouseReleaseAction;
 
+
+    //鼠标右键释放
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel")
+    class UCurveFloat* SpeedCurve;
 private:
     double Distance = 0.0;
     bool IsMouseLeft = false;

@@ -5,7 +5,16 @@
 #include "JsonLibraryValue.h"
 #include "JsonLibraryObject.h"
 #include "Components/ViewpointComponent.h"
-#include "WebAPI/ActorManager.h"
+#include "WebAPI/RigelLevelEditor.h"
+
+void URigelFunctionLibrary::ExecCommandline(const FJsonLibraryObject& Value)
+{
+    FString Command = Value.GetString(TEXT("Command"));
+    if (GEngine != nullptr)
+    {
+        GEngine->Exec(GWorld, *Command);
+    }
+}
 
 void URigelFunctionLibrary::FlyToViewpoint(const FJsonLibraryObject& Value)
 {
@@ -25,27 +34,10 @@ void URigelFunctionLibrary::SetActorVisible(const FJsonLibraryObject& Value)
     bool isShow = Value.GetBoolean(TEXT("Visible"));
     if (!strName.IsEmpty())
     {
-        AActor* actor = AActorManager::GetActorManager()->FindActor(strName);
+        AActor* actor = ARigelLevelEditor::RigelLevel()->FindActor(strName);
         if (actor != nullptr)
         {   
             actor->SetActorHiddenInGame(!isShow);
         }
-    }
-}
-
-void URigelFunctionLibrary::ExecCommandline(const FJsonLibraryObject& Value)
-{
-    FString Command = Value.GetString(TEXT("Command"));
-    if (GEngine != nullptr)
-    {
-        GEngine->Exec(GWorld, *Command);
-    }
-}
-
-void URigelFunctionLibrary::ExecCommand(const FString& Value)
-{
-    if (GEngine != nullptr)
-    {
-        GEngine->Exec(GWorld, *Value);
     }
 }

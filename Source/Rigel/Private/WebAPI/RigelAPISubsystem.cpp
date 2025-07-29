@@ -1,6 +1,7 @@
 ﻿#include "WebAPI/RigelAPISubsystem.h"
 #include "WebAPI/RigelFunctionLibrary.h"
-#include "JsonLibraryHelpers.h"
+#include "JsonLibraryValue.h"
+#include "JsonLibraryObject.h"
 
 URigelAPISubsystem::URigelAPISubsystem()
 {
@@ -11,7 +12,7 @@ URigelAPISubsystem::~URigelAPISubsystem()
 {
 }
 
-URigelAPISubsystem* URigelAPISubsystem::Instance()
+URigelAPISubsystem* URigelAPISubsystem::RigelAPISubsystem()
 {
     URigelAPISubsystem* apiSubsystem = GWorld->GetGameInstance()->GetSubsystem<URigelAPISubsystem>();
     return apiSubsystem;
@@ -22,6 +23,24 @@ void URigelAPISubsystem::Initialize(FSubsystemCollectionBase& Collection)
     Register(TEXT("FlyToViewpoint"), &URigelFunctionLibrary::FlyToViewpoint);
     Register(TEXT("ExecCommandline"), &URigelFunctionLibrary::ExecCommandline);
     Register(TEXT("SetActorVisible"), &URigelFunctionLibrary::SetActorVisible);
+
+    FString strClass = TEXT("/Rigel/Blueprints/BP_RigelInterface.BP_RigelInterface_C");
+    UClass* RigelAPIClass = LoadClass<URigelInterface>(nullptr, *strClass);
+    if (RigelAPIClass != nullptr)
+    {
+        RigelAPI = NewObject<URigelInterface>(this, RigelAPIClass, TEXT("RigelInterface"));
+
+        FRigelAPIDelegate del;
+        del.BindUFunction(RigelAPI, "SetTimeOfDay");
+        Register(TEXT("SetTimeOfDay"), del);
+
+        del.BindUFunction(RigelAPI, "SetScalarMaterialParameterCollection");
+        Register(TEXT("SetScalarMaterialParameterCollection"), del);
+
+        del.BindUFunction(RigelAPI, "SetVectorMaterialParameterCollection");
+        Register(TEXT("SetVectorMaterialParameterCollection"), del);
+    }
+    
 }
 
 void URigelAPISubsystem::Deinitialize()
@@ -53,11 +72,6 @@ void URigelAPISubsystem::Invoke(const FString& JsonData)
 
 void URigelAPISubsystem::Invoke(const FString& FunName, const FJsonLibraryObject& DataObj)
 {
-    //FString strText = TEXT("UE call Function ：") + FunName;
-   // GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, strText);
-
-    //dataObj = {"Data": {"ID":Sunny", "Name": "aaaa"}}  需要直接传递{"ID":Sunny", "Name": "aaaa"}
-    // 
     //后续有需要可以添加在哪个线程中执行的逻辑
     //AsyncTask(ENamedThreads::GameThread, {});
     if (FunctionMap.Contains(FunName))
@@ -65,8 +79,7 @@ void URigelAPISubsystem::Invoke(const FString& FunName, const FJsonLibraryObject
         Function function = FunctionMap[FunName];
         function(DataObj);
     }
-
-    if (BlueprintMap.Contains(FunName))
+    else if (BlueprintMap.Contains(FunName))
     {
         FRigelAPIDelegate delegate = BlueprintMap[FunName];
         delegate.ExecuteIfBound(DataObj);

@@ -148,13 +148,12 @@ void ARigelPawn::Zoom(const FInputActionValue& Value)
     double distance = PawnDir.Length();
     float speed = delta / 10.0;
     FVector newLocation = UKismetMathLibrary::VLerp(pawnLocation, PivotPoint, speed);
-    SetActorLocation(newLocation, true);
+    SetActorLocation(newLocation, false);
     if (FocusActor != nullptr)
     {
         FocusActor->SetActorHiddenInGame(false);
         FocusActor->SetActorLocation(PickWorldLocation);
     }
-    //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, FString::Printf(TEXT("%f"), speed));
 }
 
 void ARigelPawn::YawRotation(const FInputActionValue& Value)
@@ -305,10 +304,15 @@ void ARigelPawn::MoveForward(const FInputActionValue& Value)
 {
     if (IsMouseLeft)
     {
-        FVector MoveDir = PickWorldLocation - GetActorLocation();
+        FVector PawnLocation = GetActorLocation();
+        FVector MoveDir = PickWorldLocation - PawnLocation;
         FVector CurrentMousrLocation = PickLocation();
-        FVector moveVector = CurrentMousrLocation - GetActorLocation();
+        FVector moveVector = CurrentMousrLocation - PawnLocation;
         float speed = MoveDir.Z / 20;
+        if (SpeedCurve != nullptr)
+        {
+            speed = SpeedCurve->GetFloatValue(PawnLocation.Z / 100.0);
+        }
         FloatingMovement->MaxSpeed = speed;
         FVector2D delta = Value.Get<FVector2D>();
 
@@ -317,7 +321,7 @@ void ARigelPawn::MoveForward(const FInputActionValue& Value)
 
         const FVector ForwardDirection = FRotationMatrix(YanRotation).GetUnitAxis(EAxis::X);
 
-        AddActorWorldOffset(ForwardDirection * delta.X * speed * -1);
+        AddActorWorldOffset(ForwardDirection * delta.X * speed);
     }
     
 }
@@ -326,10 +330,17 @@ void ARigelPawn::MoveRight(const FInputActionValue& Value)
 {
     if (IsMouseLeft)
     {
-        FVector MoveDir = PickWorldLocation - GetActorLocation();
+        FVector PawnLocation = GetActorLocation();
+        FVector MoveDir = PickWorldLocation - PawnLocation;
         FVector CurrentMousrLocation = PickLocation();
-        FVector moveVector = CurrentMousrLocation - GetActorLocation();
+        FVector moveVector = CurrentMousrLocation - PawnLocation;
+
         float speed = MoveDir.Z / 20;
+        if (SpeedCurve != nullptr)
+        {
+            speed = SpeedCurve->GetFloatValue(PawnLocation.Z / 100.0);
+        }
+
         FloatingMovement->MaxSpeed = speed;
         FVector2D delta = Value.Get<FVector2D>();
 
@@ -338,7 +349,7 @@ void ARigelPawn::MoveRight(const FInputActionValue& Value)
 
         const FVector RightDirection = FRotationMatrix(YanRotation).GetUnitAxis(EAxis::Y);
 
-        AddActorWorldOffset(RightDirection * delta.X * speed);
+        AddActorWorldOffset(RightDirection * delta.X * speed * -1);
     }
 }
 

@@ -36,7 +36,7 @@ protected:
 public:
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
     class UWebInterface* WebInterface;
+
 private:
     
-   
 };
