@@ -17,6 +17,12 @@ public:
 	// Sets default values for this actor's properties
 	APOIBase();
 
+    UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+    void OnClickedActorEvent(AActor* TouchedActor, FKey ButtonPressed);
+
+    UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+    void OnClickedComonetEvent(UPrimitiveComponent* TouchedComponent, FKey ButtonPressed);
+
 protected:
 	// Called when, the game starts or when spawned
 	virtual void BeginPlay() override;

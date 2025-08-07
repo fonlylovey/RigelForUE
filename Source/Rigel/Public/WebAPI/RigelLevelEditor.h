@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "RigelLevelEditor.generated.h"
 
+struct FJsonLibraryValue;
+
 UCLASS()
 class ARigelLevelEditor : public AActor
 {
@@ -22,6 +24,19 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (Tooltip = "从关卡中查找Actor"))
     AActor* FindActor(const FString& Name);
 
+    void SetLayerVisibility(const FString& LayerID, bool isVisible);
+    void RemoveLayer(const FString& LayerID);
+
+    void Add3DTiles(const FString& LayerID, const FString&);
+    void AddSplineMesh();
+
+    void AddSelect(UPrimitiveComponent* component);
+    void ClearSelect();
+
+    UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (Tooltip = "发送消息给WebUI"))
+    void SendMessageToWeb(const FString& Function, const FJsonLibraryValue& Data);
+
+    void SetWebWIdget(class UWebWidget* widget);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,9 +45,21 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rigel")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rigel")
     AActor* UDS;
 
 	UPROPERTY(EditAnywhere, Blueprintable, BlueprintReadWrite, Category = "Rigel")
 	TMap<FString, AActor*> ActorMap;
+
+    UPROPERTY(EditAnywhere, Blueprintable, BlueprintReadWrite, Category = "Rigel")
+    TMap<FString, AActor*> LayerMap;
+
+
+    UPROPERTY(EditAnywhere, Blueprintable, BlueprintReadWrite, Category = "Rigel")
+    UMaterialInstance* SelectMaterial;
+
+private:
+    TArray<UPrimitiveComponent*> SelectSet;
+
+    class UWebWidget* WebWidget;
 };

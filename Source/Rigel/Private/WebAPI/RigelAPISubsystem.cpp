@@ -21,8 +21,15 @@ URigelAPISubsystem* URigelAPISubsystem::RigelAPISubsystem()
 void URigelAPISubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     Register(TEXT("FlyToViewpoint"), &URigelFunctionLibrary::FlyToViewpoint);
+    Register(TEXT("FlyToActor"), &URigelFunctionLibrary::FlyToActor);
     Register(TEXT("ExecCommandline"), &URigelFunctionLibrary::ExecCommandline);
     Register(TEXT("SetActorVisible"), &URigelFunctionLibrary::SetActorVisible);
+    Register(TEXT("PlayActorAnimation"), &URigelFunctionLibrary::PlayActorAnimation); 
+    Register(TEXT("EnablePostProcessVolume"), &URigelFunctionLibrary::EnablePostProcessVolume);
+    Register(TEXT("SetLayerVisible"), &URigelFunctionLibrary::SetLayerVisible);
+    Register(TEXT("Add3DTiles"), &URigelFunctionLibrary::Add3DTiles);
+    Register(TEXT("Remove3DTiles"), &URigelFunctionLibrary::Remove3DTiles);
+    Register(TEXT("Log"), &URigelFunctionLibrary::Log);
 
     FString strClass = TEXT("/Rigel/Blueprints/BP_RigelInterface.BP_RigelInterface_C");
     UClass* RigelAPIClass = LoadClass<URigelInterface>(nullptr, *strClass);

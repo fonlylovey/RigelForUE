@@ -47,6 +47,7 @@ public:
 
     void RoamingToViewpoint(float time, const FViewpoint& Viewpoint);
 
+    void RoamingToActor(float time, const AActor* Actor);
 public:
 
 

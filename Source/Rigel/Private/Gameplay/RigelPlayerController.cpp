@@ -6,6 +6,7 @@ ARigelPlayerController::ARigelPlayerController(const FObjectInitializer& ObjectI
 {
     PixelStreamingInput = CreateDefaultSubobject<UPixelStreamingInput>(TEXT("PixelStreamingInput"));
     PixelStreamingInput->OnInputEvent.AddDynamic(this, &ARigelPlayerController::OnMessageByWeb);
+    this->bEnableClickEvents = true;
 }
 
 void ARigelPlayerController::OnMessageByWeb(const FString& Data)

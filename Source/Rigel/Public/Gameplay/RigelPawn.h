@@ -6,8 +6,12 @@
 #include "Camera/CameraComponent.h"
 #include "RigelPawn.generated.h"
 
+class UPrimitiveComponent;
 class UFloatingPawnMovement;
 class UWidgetInteractionComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPickActorDelegate, AActor*, PickActor, UPrimitiveComponent*, PickComponent);
+
 UCLASS()
 class RIGEL_API ARigelPawn : public APawn
 {
@@ -37,6 +41,9 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void FlyToViewpoint(float time, const FViewpoint& Viewpoint);
+
+    UFUNCTION(BlueprintCallable)
+    void FlyToActor(float time, const AActor* actor);
 
 protected:
 
@@ -68,6 +75,8 @@ protected:
     void MoveForward_Key(const FInputActionValue& Value);
     void MoveRight_Key(const FInputActionValue& Value);
 
+    void MoveUp_Key(const FInputActionValue& Value);
+
 public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rigel")
     TObjectPtr<UCameraComponent> Camera;
@@ -95,17 +104,21 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
     class UInputAction* MoveRightAction;
 
-    //水平方向移动
+    ////键盘WS竖直方向移动
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
     class UInputAction* KeyMoveForwardAction;
 
-    //水平方向移动
+    //键盘AD水平方向移动
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
     class UInputAction* KeyMoveRightAction;
 
     //zoom 拉近拉远
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
     class UInputAction* ZoomAction;
+
+    //键盘QE竖直方向移动
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
+    class UInputAction* KeyUpDown;
 
     //水平环绕旋转
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
@@ -131,15 +144,19 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
     class UInputAction* RightMouseReleaseAction;
 
-
-    //鼠标右键释放
+    //
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel")
     class UCurveFloat* SpeedCurve;
+
+    UPROPERTY(BlueprintAssignable)
+    FPickActorDelegate OnPickEvent;
 private:
     double Distance = 0.0;
     bool IsMouseLeft = false;
     bool IsMouseRight = false;
     //鼠标当前点击时和场景交点的世界坐标
     FVector PickWorldLocation;
+
+    
 
 };

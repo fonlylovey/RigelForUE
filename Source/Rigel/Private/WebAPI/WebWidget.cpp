@@ -7,6 +7,7 @@
 #include "Internationalization/Internationalization.h"
 #include "Blueprint/WidgetTree.h"
 #include "WebAPI/RigelAPISubsystem.h"
+#include "WebAPI/RigelLevelEditor.h"
 
 #define LOCTEXT_NAMESPACE "WebWidget"
 
@@ -25,6 +26,7 @@ void UWebWidget::NativeConstruct()
         //多语言输入,前端输入栏不能输入中文问题
         WebInterface->EnableIME();
         WebInterface->OnInterfaceEvent.AddDynamic(this, &UWebWidget::OnInterfaceEvent);
+        ARigelLevelEditor::RigelLevel()->SetWebWIdget(this);
     }
     
     APlayerController* Controller = UGameplayStatics::GetPlayerController(GWorld, 0);
@@ -53,6 +55,11 @@ void UWebWidget::OnInterfaceEvent(const FName Name, FJsonLibraryValue Data, FWeb
     subsystem->Invoke(Name.ToString(), DataObj);
 }
 
+
+void UWebWidget::SendMessage(const FString& Function, const FJsonLibraryValue& Data)
+{
+    WebInterface->Call(Function, Data);
+}
 
 void UWebWidget::LoadHTML(const FString& URL)
 {

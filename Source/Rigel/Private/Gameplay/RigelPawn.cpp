@@ -8,6 +8,7 @@
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Components/ViewpointComponent.h"
 #include "WebAPI/RigelAPISubsystem.h"
+#include "WebAPI/RigelLevelEditor.h"
 
 // Sets default values
 ARigelPawn::ARigelPawn(const FObjectInitializer& ObjectInitializer)
@@ -64,8 +65,9 @@ void ARigelPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputCom
         EnhancedInputComponent->BindAction(RightMouseReleaseAction, ETriggerEvent::Triggered, this, &ARigelPawn::OnRightMouseRelease);
         EnhancedInputComponent->BindAction(MoveForwardAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveForward);
         EnhancedInputComponent->BindAction(MoveRightAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveRight);
-        //EnhancedInputComponent->BindAction(KeyMoveForwardAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveForward_Key);
-        //EnhancedInputComponent->BindAction(KeyMoveRightAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveRight_Key);
+        EnhancedInputComponent->BindAction(KeyMoveForwardAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveForward_Key);
+        EnhancedInputComponent->BindAction(KeyMoveRightAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveRight_Key);
+        EnhancedInputComponent->BindAction(KeyUpDown, ETriggerEvent::Triggered, this, &ARigelPawn::MoveUp_Key);
 
     }
 }
@@ -80,14 +82,14 @@ FVector ARigelPawn::PickLocation()
     if (PlayerController->DeprojectMousePositionToWorld(Location, Direction))
     {
         FHitResult result;
-        GWorld->LineTraceSingleByChannel(result, Location, Direction * 1000000, ECC_Visibility);
+
+        GWorld->LineTraceSingleByChannel(result, Location, Direction * 10000000, ECC_Visibility);
         if (result.IsValidBlockingHit())
         {
             pickLocation = result.Location;
         }
         else
         {
-            //GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, TEXT("没有相交:") + FoucsLocation.ToString());
             pickLocation = FVector::ZeroVector;
         }
     }
@@ -98,20 +100,25 @@ AActor* ARigelPawn::PickActor()
 {
     AActor* pickActor = nullptr;
     APlayerController* PlayerController = Cast<APlayerController>(Controller);
-    if (PlayerController == nullptr) return nullptr;
+    if (PlayerController == nullptr) return pickActor;
 
     FVector Location, Direction;
     if (PlayerController->DeprojectMousePositionToWorld(Location, Direction))
     {
         FHitResult result;
-        GWorld->LineTraceSingleByChannel(result, Location, Direction * 10000000000, ECC_Visibility);
+        GWorld->LineTraceSingleByChannel(result, Location, Direction * 10000000, ECC_Visibility);
         if (result.IsValidBlockingHit())
         {
-            pickActor = result.GetActor();
+            OnPickEvent.Broadcast(result.GetActor(), result.GetComponent());
+            auto pri = Cast<UPrimitiveComponent>(result.GetComponent());
+            if (pri != nullptr)
+            {
+                //ARigelLevelEditor::RigelLevel()->AddSelect(pri);
+            }
         }
     }
     return pickActor;
-}
+} 
 
 UPrimitiveComponent* ARigelPawn::PickComponent()
 {
@@ -137,6 +144,11 @@ void ARigelPawn::FlyToViewpoint(float time, const FViewpoint& Viewpoint)
     ViewpointComponent->RoamingToViewpoint(time, Viewpoint);
 }
 
+void ARigelPawn::FlyToActor(float time, const AActor* actor)
+{
+
+}
+
 void ARigelPawn::Zoom(const FInputActionValue& Value)
 {
     float delta = Value.Get<float>();
@@ -147,6 +159,8 @@ void ARigelPawn::Zoom(const FInputActionValue& Value)
     FVector PawnDir = pawnLocation - PivotPoint;
     double distance = PawnDir.Length();
     float speed = delta / 10.0;
+    FVector2D aaa = FVector2D(distance, 0);
+    //GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, TEXT("没有相交:") + aaa.ToString());
     FVector newLocation = UKismetMathLibrary::VLerp(pawnLocation, PivotPoint, speed);
     SetActorLocation(newLocation, false);
     if (FocusActor != nullptr)
@@ -194,7 +208,6 @@ void ARigelPawn::YawRotation(const FInputActionValue& Value)
         FRotator rotatorPick = UKismetMathLibrary::RotatorFromAxisAndAngle(FVector::UpVector, deltaAngle);
         FRotator rotateRotation = UKismetMathLibrary::ComposeRotators(GetActorRotation(), rotatorPick);
         GetController()->SetControlRotation(rotateRotation);
-        //SetActorRotation(rotateRotation);
     }
    
 }
@@ -207,7 +220,7 @@ void ARigelPawn::PitchRotation(const FInputActionValue& Value)
     }
     if (FocusActor != nullptr)
     {
-        FocusActor->SetActorHiddenInGame(false);
+        FocusActor->SetActorHiddenInGame(false); 
         FocusActor->SetActorLocation(PickWorldLocation);
     }
 
@@ -220,7 +233,7 @@ void ARigelPawn::PitchRotation(const FInputActionValue& Value)
     if (PickWorldLocation.Equals(FVector::ZeroVector))
     {
         FRotator rotateRotation = UKismetMathLibrary::ComposeRotators(GetActorRotation(), FRotator(deltaAngle, 0, 0));
-        GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, rotateRotation.ToString());
+        //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, rotateRotation.ToString());
         if (rotateRotation.Pitch >= -85.0 && rotateRotation.Pitch <= 0)
         {
             //这个地方yaw角度要用Controller，不能用计算的rotateRotation
@@ -235,20 +248,21 @@ void ARigelPawn::PitchRotation(const FInputActionValue& Value)
         //计算从点击位置到pawn位置的向量，Pcik位置是原点，指向pawn
         FVector PawnDir = pawnLocation - PickWorldLocation;
 
-        //将PawnDir旋转RotatorAngle度之后，的新的Pawn的位置
-        FRotator const ControlSpaceRot = this->GetViewRotation();
-        FVector MovementVector = FRotationMatrix(ControlSpaceRot).GetScaledAxis(EAxis::Y);
-        FVector newLocation = UKismetMathLibrary::RotateAngleAxis(PawnDir, deltaAngle, MovementVector);
-
         //计算Pawn的角度
         
         FRotator rotatorPick = UKismetMathLibrary::RotatorFromAxisAndAngle(GetActorRightVector(), deltaAngle);
         FRotator rotateRotation = UKismetMathLibrary::ComposeRotators(GetActorRotation(), rotatorPick);
+        
         if (rotateRotation.Pitch >= -85.0 && rotateRotation.Pitch <= 0)
         {
-            FRotator newRotator = FRotator(FMath::Clamp(rotateRotation.Pitch, -85.1, 0), ControllerRotator.Yaw, 0.0);
+            FRotator newRotator = FRotator(FMath::Clamp(rotateRotation.Pitch, -85.0, 0), ControllerRotator.Yaw, 0.0);
+            //将PawnDir旋转RotatorAngle度之后，的新的Pawn的位置
+            FVector MovementVector = FRotationMatrix(ControllerRotator).GetScaledAxis(EAxis::Y);
+            FVector newLocation = UKismetMathLibrary::RotateAngleAxis(PawnDir, deltaAngle, MovementVector);
             SetActorLocation(PickWorldLocation + newLocation);
+            //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, rotateRotation.ToString());
             GetController()->SetControlRotation(newRotator);
+            
         }
     }
    
@@ -274,6 +288,12 @@ void ARigelPawn::OnLeftMouseRelease(const FInputActionValue& Value)
 {
     IsMouseLeft = false;
     Distance = 0.0;
+    //鼠标按下的位置和鼠标释放的位置相近，视为点击否则是拖拽
+    if (PickWorldLocation.Equals(PickLocation(), 0.0001))
+    {
+        PickActor();
+    }
+    
     if (FocusActor != nullptr)
     {
         FocusActor->SetActorHiddenInGame(true);
@@ -324,7 +344,7 @@ void ARigelPawn::MoveForward(const FInputActionValue& Value)
         AddActorWorldOffset(ForwardDirection * delta.X * speed);
     }
     
-}
+} 
 
 void ARigelPawn::MoveRight(const FInputActionValue& Value)
 {
@@ -355,27 +375,30 @@ void ARigelPawn::MoveRight(const FInputActionValue& Value)
 
 void ARigelPawn::MoveForward_Key(const FInputActionValue& Value)
 {
-    FVector MoveDir = PickWorldLocation - GetActorLocation();
-    FVector CurrentMousrLocation = PickLocation();
-    FVector moveVector = CurrentMousrLocation - GetActorLocation();
-    float speed = MoveDir.Z / 20;
+    FVector PawnLocation = GetActorLocation();
+    float speed = PawnLocation.Z / 100;
+    if (SpeedCurve != nullptr)
+    {
+        speed = SpeedCurve->GetFloatValue(PawnLocation.Z / 100.0);
+    }
     FloatingMovement->MaxSpeed = speed;
     FVector2D delta = Value.Get<FVector2D>();
 
     const FRotator Rotation = Controller->GetControlRotation();
     const FRotator YanRotation(0, Rotation.Yaw, 0);
 
-    const FVector ForwardDirection = FRotationMatrix(YanRotation).GetUnitAxis(EAxis::X);
-
-    AddActorWorldOffset(ForwardDirection * delta.X * speed * -1);
+    const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
+    AddActorWorldOffset(ForwardDirection * delta.X * speed);
 }
 
 void ARigelPawn::MoveRight_Key(const FInputActionValue& Value)
 {
-    FVector MoveDir = PickWorldLocation - GetActorLocation();
-    FVector CurrentMousrLocation = PickLocation();
-    FVector moveVector = CurrentMousrLocation - GetActorLocation();
-    float speed = MoveDir.Z / 20;
+    FVector PawnLocation = GetActorLocation();
+    float speed = PawnLocation.Z / 100;
+    if (SpeedCurve != nullptr)
+    {
+        speed = SpeedCurve->GetFloatValue(PawnLocation.Z / 100.0);
+    }
     FloatingMovement->MaxSpeed = speed;
     FVector2D delta = Value.Get<FVector2D>();
 
@@ -383,7 +406,20 @@ void ARigelPawn::MoveRight_Key(const FInputActionValue& Value)
     const FRotator YanRotation(0, Rotation.Yaw, 0);
 
     const FVector RightDirection = FRotationMatrix(YanRotation).GetUnitAxis(EAxis::Y);
-
     AddActorWorldOffset(RightDirection * delta.X * speed);
+}
+
+void ARigelPawn::MoveUp_Key(const FInputActionValue& Value)
+{
+    FVector PawnLocation = GetActorLocation();
+    float speed = PawnLocation.Z / 100;
+    if (SpeedCurve != nullptr)
+    {
+        speed = SpeedCurve->GetFloatValue(PawnLocation.Z / 100.0);
+    }
+    FloatingMovement->MaxSpeed = speed;
+    FVector2D delta = Value.Get<FVector2D>();
+
+    AddActorWorldOffset(FVector(0, 0, delta.X * speed));
 }
 

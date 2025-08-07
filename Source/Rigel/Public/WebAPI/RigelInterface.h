@@ -19,4 +19,5 @@ public:
 
     UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
     void SetVectorMaterialParameterCollection(const FJsonLibraryObject& Value);
+
 };

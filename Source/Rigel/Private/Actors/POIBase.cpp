@@ -23,10 +23,22 @@ APOIBase::APOIBase()
     WidgetComponent->SetupAttachment(RootComponent);
 }
 
+void APOIBase::OnClickedActorEvent_Implementation(AActor* TouchedActor, FKey ButtonPressed)
+{
+
+}
+
+void APOIBase::OnClickedComonetEvent_Implementation(UPrimitiveComponent* TouchedComponent, FKey ButtonPressed)
+{
+
+}
+
 // Called when the game starts or when spawned
 void APOIBase::BeginPlay()
 {
 	Super::BeginPlay();
+    WidgetComponent->OnClicked.AddDynamic(this, &APOIBase::OnClickedComonetEvent);
+    OnClicked.AddDynamic(this, &APOIBase::OnClickedActorEvent);
 }
 
 void APOIBase::EndPlay(const EEndPlayReason::Type EndPlayReason)

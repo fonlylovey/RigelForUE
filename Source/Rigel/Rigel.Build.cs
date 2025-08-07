@@ -34,7 +34,9 @@ public class Rigel : ModuleRules
                 "GeoReferencing",
                 "PCG",
                 "WebUI",
-                "JsonLibrary"
+                "JsonLibrary",
+                "InputCore",
+                "CesiumRuntime"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

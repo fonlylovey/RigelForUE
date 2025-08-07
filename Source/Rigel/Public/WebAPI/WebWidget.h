@@ -24,6 +24,8 @@ public:
     UFUNCTION(BlueprintCallable)
     void LoadFile(const FString& ContentFile);
 
+    UFUNCTION(BlueprintCallable)
+    void SendMessage(const FString& Function, const FJsonLibraryValue& Data);
 protected:
 
     virtual void NativeConstruct() override;
