@@ -1,9 +1,11 @@
 #include "Actors/ViewpointManager.h"
 #include "Components/ViewpointComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
-#include "Engine/TextureRenderTarget2D.h"
+
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetRenderingLibrary.h"
+#include "Components/SceneComponent.h"
 
 // Sets default values
 AViewpointManager::AViewpointManager()
@@ -15,15 +17,10 @@ AViewpointManager::AViewpointManager()
 
     Viewpoint = CreateDefaultSubobject<UViewpointComponent>(TEXT("Viewpoint"));
 
-    RenderTarget = CreateDefaultSubobject<UTextureRenderTarget2D>(TEXT("RenderTarget"));
-    RenderTarget->ResizeTarget(128, 128);
-    RenderTarget->UpdateResource();
-
     SceneCapture = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneCapture"));
     SceneCapture->SetupAttachment(RootComponent);
-    SceneCapture->TextureTarget = RenderTarget;
-    SceneCapture->CaptureSource = SCS_FinalColorLDR;
-
+    SceneCapture->CaptureSource = ESceneCaptureSource::SCS_SceneColorHDR;
+        
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     Camera->SetMobility(EComponentMobility::Movable);
     Camera->SetupAttachment(RootComponent);
@@ -51,10 +48,16 @@ void AViewpointManager::AddViewpoint()
     viewpoint.ID = MakeUniqueObjectName(this, UViewpointComponent::StaticClass(), TEXT("Viewpoint")).ToString();
     viewpoint.Name = viewpoint.ID;
     SceneCapture->CaptureScene();
-    viewpoint.Thumbnail = RenderTarget->ConstructTexture2D(GetTransientPackage(), viewpoint.Name, RenderTarget->GetMaskedFlags());
-    viewpoint.Thumbnail->UpdateResource();
+    if (!IsValid(viewpoint.Thumbnail))
+    {
+        FString ProjectDir = FPaths::ProjectDir();
+        FString DataPath = ProjectDir + TEXT("Viewpoint/");
+        FString filePath = DataPath + viewpoint.ID + ".png";
+        UKismetRenderingLibrary::ExportRenderTarget(this, SceneCapture->TextureTarget, DataPath, viewpoint.ID + ".png");
+        viewpoint.Thumbnail = UKismetRenderingLibrary::ImportFileAsTexture2D(this, filePath);
+    }
+    
     ViewpointList.Add(viewpoint.ID, viewpoint);
-    RenderTarget->AssetImportData = nullptr;
 }
 
 AViewpointManager* AViewpointManager::GetViewpointManager()
@@ -80,6 +83,11 @@ AViewpointManager* AViewpointManager::GetViewpointManager()
 
 FViewpoint AViewpointManager::GetViewpoint(const FString& ViewpointID)
 {
-    FViewpoint viewpoint = ViewpointList.FindRef(ViewpointID);
-    return viewpoint;
+    if (ViewpointList.Contains(ViewpointID))
+    {
+        FViewpoint viewpoint = ViewpointList.FindRef(ViewpointID);
+        return viewpoint;
+    }
+   
+    return FViewpoint();
 }

@@ -21,10 +21,16 @@ public:
     static void FlyToViewpoint(const FJsonLibraryObject& Value);
 
     UFUNCTION(BlueprintCallable)
+    static void FlyToUE(const FJsonLibraryObject& Value);
+
+    UFUNCTION(BlueprintCallable)
     static void FlyToActor(const FJsonLibraryObject& Value);
 
     UFUNCTION(BlueprintCallable)
     static void SetActorVisible(const FJsonLibraryObject& Value);
+
+    UFUNCTION(BlueprintCallable)
+    static void SetActorRootVisible(const FJsonLibraryObject& Value);
 
     UFUNCTION(BlueprintCallable)
     static void PlayActorAnimation(const FJsonLibraryObject& Value);
@@ -47,5 +53,30 @@ public:
     UFUNCTION(BlueprintCallable)
     static void Remove3DTiles(const FJsonLibraryObject& Value);
 
+    UFUNCTION(BlueprintCallable)
+    static void StartDrawing(const FJsonLibraryObject& Value);
 
+    UFUNCTION(BlueprintCallable)
+    static void EndDrawing(const FJsonLibraryObject& Value);
+
+    UFUNCTION(BlueprintCallable)
+    static void RemoveActor(const FJsonLibraryObject& Value);
+
+    UFUNCTION(BlueprintCallable)
+    static void ClearRuntimeActors(const FJsonLibraryObject& Value);
+
+    UFUNCTION(BlueprintCallable)
+    static void GetPawnTransform(const FJsonLibraryObject& Value);
+
+    UFUNCTION(BlueprintCallable)
+    static void UseDefaultTerrain(const FJsonLibraryObject& Value);
+
+    UFUNCTION(BlueprintCallable)
+    static void UpdateTerrainURL(const FJsonLibraryObject& Value);
+
+    UFUNCTION(BlueprintCallable)
+    static void AddWMSServer(const FJsonLibraryObject& Value);
+
+    UFUNCTION(BlueprintCallable)
+    static void AddWMTSServer(const FJsonLibraryObject& Value);
 };

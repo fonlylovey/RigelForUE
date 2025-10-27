@@ -18,11 +18,13 @@ public:
 	APOIBase();
 
     UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-    void OnClickedActorEvent(AActor* TouchedActor, FKey ButtonPressed);
+    void OnClickedActorEvent();
 
     UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-    void OnClickedComonetEvent(UPrimitiveComponent* TouchedComponent, FKey ButtonPressed);
+    void OnClickedComonetEvent();
 
+    UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+    void UpdateJson();
 protected:
 	// Called when, the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -47,10 +49,16 @@ public:
     FString ID = TEXT("");
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EarthBuilder")
-    float MaxScale = 10.0;
+    FString Type = TEXT("");
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EarthBuilder")
-    float ScaleFactor = 100.0;
+    FString JsonValue = TEXT("");
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EarthBuilder")
+    float MaxScale = 100.0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EarthBuilder")
+    float ScaleFactor = 100000;
 
     //是否在最大距离时隐藏POI
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EarthBuilder")
@@ -67,7 +75,6 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EarthBuilder")
     FVector InitPostion = FVector::ZeroVector;
-
 private:
     void createWidget();
 

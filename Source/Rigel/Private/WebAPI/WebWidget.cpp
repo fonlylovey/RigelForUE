@@ -32,6 +32,7 @@ void UWebWidget::NativeConstruct()
     APlayerController* Controller = UGameplayStatics::GetPlayerController(GWorld, 0);
     FInputModeGameAndUI inputMode;
     //inputMode.SetWidgetToFocus(WebInterface);
+    inputMode.SetHideCursorDuringCapture(false);
     Controller->SetInputMode(inputMode);
     Controller->SetShowMouseCursor(true);
     Controller->bEnableMouseOverEvents = true;
@@ -64,6 +65,7 @@ void UWebWidget::SendMessage(const FString& Function, const FJsonLibraryValue& D
 void UWebWidget::LoadHTML(const FString& URL)
 {
     WebInterface->LoadURL(URL);
+    GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, URL);
 }
 
 void UWebWidget::LoadFile(const FString& ContentFile)

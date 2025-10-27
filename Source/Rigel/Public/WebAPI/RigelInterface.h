@@ -15,9 +15,8 @@ public:
     void SetTimeOfDay(const FJsonLibraryObject& DataObj);
 
     UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-    void SetScalarMaterialParameterCollection(const FJsonLibraryObject& Value);
+    void SetRigelScalarParameter(const FJsonLibraryObject& Value);
 
     UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-    void SetVectorMaterialParameterCollection(const FJsonLibraryObject& Value);
-
+    void SetRigelVectorParameter(const FJsonLibraryObject& Value);
 };

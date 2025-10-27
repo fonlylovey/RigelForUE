@@ -20,16 +20,28 @@ URigelAPISubsystem* URigelAPISubsystem::RigelAPISubsystem()
 
 void URigelAPISubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
+    Register(TEXT("Log"), &URigelFunctionLibrary::Log);
     Register(TEXT("FlyToViewpoint"), &URigelFunctionLibrary::FlyToViewpoint);
     Register(TEXT("FlyToActor"), &URigelFunctionLibrary::FlyToActor);
     Register(TEXT("ExecCommandline"), &URigelFunctionLibrary::ExecCommandline);
     Register(TEXT("SetActorVisible"), &URigelFunctionLibrary::SetActorVisible);
+    Register(TEXT("SetActorRootVisible"), &URigelFunctionLibrary::SetActorRootVisible);
     Register(TEXT("PlayActorAnimation"), &URigelFunctionLibrary::PlayActorAnimation); 
     Register(TEXT("EnablePostProcessVolume"), &URigelFunctionLibrary::EnablePostProcessVolume);
     Register(TEXT("SetLayerVisible"), &URigelFunctionLibrary::SetLayerVisible);
     Register(TEXT("Add3DTiles"), &URigelFunctionLibrary::Add3DTiles);
     Register(TEXT("Remove3DTiles"), &URigelFunctionLibrary::Remove3DTiles);
-    Register(TEXT("Log"), &URigelFunctionLibrary::Log);
+    Register(TEXT("StartDrawing"), &URigelFunctionLibrary::StartDrawing);
+    Register(TEXT("EndDrawing"), &URigelFunctionLibrary::EndDrawing);
+    Register(TEXT("RemoveActor"), &URigelFunctionLibrary::RemoveActor);
+    Register(TEXT("FlyToUE"), &URigelFunctionLibrary::FlyToUE);
+    Register(TEXT("ClearRuntimeActors"), &URigelFunctionLibrary::ClearRuntimeActors);
+    Register(TEXT("GetPawnTransform"), &URigelFunctionLibrary::GetPawnTransform);
+    Register(TEXT("UseDefaultTerrain"), &URigelFunctionLibrary::UseDefaultTerrain);
+    Register(TEXT("UpdateTerrainURL"), &URigelFunctionLibrary::UpdateTerrainURL);
+    Register(TEXT("AddWMSServer"), &URigelFunctionLibrary::AddWMSServer);
+    Register(TEXT("AddWMTSServer"), &URigelFunctionLibrary::AddWMTSServer);
+
 
     FString strClass = TEXT("/Rigel/Blueprints/BP_RigelInterface.BP_RigelInterface_C");
     UClass* RigelAPIClass = LoadClass<URigelInterface>(nullptr, *strClass);
@@ -40,12 +52,6 @@ void URigelAPISubsystem::Initialize(FSubsystemCollectionBase& Collection)
         FRigelAPIDelegate del;
         del.BindUFunction(RigelAPI, "SetTimeOfDay");
         Register(TEXT("SetTimeOfDay"), del);
-
-        del.BindUFunction(RigelAPI, "SetScalarMaterialParameterCollection");
-        Register(TEXT("SetScalarMaterialParameterCollection"), del);
-
-        del.BindUFunction(RigelAPI, "SetVectorMaterialParameterCollection");
-        Register(TEXT("SetVectorMaterialParameterCollection"), del);
     }
     
 }
@@ -69,10 +75,8 @@ void URigelAPISubsystem::Register(const FString& Name, FRigelAPIDelegate InDeleg
 void URigelAPISubsystem::Invoke(const FString& JsonData)
 {
     //初步解析json
-    //{"Name":"SetVisible", "Data": {"ID":Sunny", "Name": "aaaa"}}
     FJsonLibraryObject jsonRootObj = FJsonLibraryObject::Parse(JsonData);
     FString strName = jsonRootObj.GetString(TEXT("Name"));
-    //{"Data": {"ID":Sunny", "Name": "aaaa"}}  需要直接传递{"ID":Sunny", "Name": "aaaa"}
     FJsonLibraryObject dataObj = jsonRootObj.GetObject(TEXT("Data"));
     Invoke(strName, dataObj);
 }
@@ -89,6 +93,6 @@ void URigelAPISubsystem::Invoke(const FString& FunName, const FJsonLibraryObject
     else if (BlueprintMap.Contains(FunName))
     {
         FRigelAPIDelegate delegate = BlueprintMap[FunName];
-        delegate.ExecuteIfBound(DataObj);
+        delegate.Execute(DataObj);
     }
 }

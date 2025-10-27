@@ -9,6 +9,7 @@
 #include "Actors/AnimationActor.h"
 #include "Engine/PostProcessVolume.h"
 #include "LevelInstance/LevelInstanceActor.h"
+#include "Kismet/KismetMaterialLibrary.h"
 
 void URigelFunctionLibrary::Log(const FJsonLibraryObject& Value)
 {
@@ -40,6 +41,25 @@ void URigelFunctionLibrary::FlyToViewpoint(const FJsonLibraryObject& Value)
     }
 }
 
+void URigelFunctionLibrary::FlyToUE(const FJsonLibraryObject& Value)
+{
+    FVector Lcoation;
+    FRotator Rotation;
+    float time = Value.GetFloat(TEXT("Time"));
+    Lcoation.X = Value.GetFloat(TEXT("X"));
+    Lcoation.Y = Value.GetFloat(TEXT("Y"));
+    Lcoation.Z = Value.GetFloat(TEXT("Z"));
+
+    Rotation.Yaw = Value.GetFloat(TEXT("Yaw"));
+    Rotation.Pitch = Value.GetFloat(TEXT("Pitch"));
+    Rotation.Roll = Value.GetFloat(TEXT("Roll"));
+    ARigelPawn* rigelPawn = Cast<ARigelPawn>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+    if (rigelPawn != nullptr)
+    {
+        rigelPawn->FlyToUE(time, Lcoation, Rotation);
+    }
+}
+
 void URigelFunctionLibrary::FlyToActor(const FJsonLibraryObject& Value)
 {
     float time = Value.GetFloat(TEXT("Time"));
@@ -63,7 +83,7 @@ void URigelFunctionLibrary::SetActorVisible(const FJsonLibraryObject& Value)
         {   
             
             actor->SetActorHiddenInGame(!isShow);
-            
+            actor->SetActorEnableCollision(isShow);
             ALevelInstance* levelInstance = Cast<ALevelInstance>(actor);
             if (levelInstance)
             {
@@ -73,6 +93,20 @@ void URigelFunctionLibrary::SetActorVisible(const FJsonLibraryObject& Value)
                         return true;
                     });
             }
+        }
+    }
+}
+
+void URigelFunctionLibrary::SetActorRootVisible(const FJsonLibraryObject& Value)
+{
+    FString strName = Value.GetString(TEXT("Name"));
+    bool isShow = Value.GetBoolean(TEXT("Visible"));
+    if (!strName.IsEmpty())
+    {
+        AActor* actor = ARigelLevelEditor::RigelLevel()->FindActor(strName);
+        if (actor != nullptr)
+        {
+            actor->GetRootComponent()->SetHiddenInGame(!isShow);
         }
     }
 }
@@ -139,7 +173,8 @@ void URigelFunctionLibrary::Add3DTiles(const FJsonLibraryObject& Value)
 {
     FString layerID = Value.GetString(TEXT("LayerID"));
     FString Url = Value.GetString(TEXT("URL"));
-    ARigelLevelEditor::RigelLevel()->Add3DTiles(layerID, Url);
+    float Height = Value.GetFloat(TEXT("Height"));
+    ARigelLevelEditor::RigelLevel()->Add3DTiles(layerID, Url, Height);
 }
 
 void URigelFunctionLibrary::Remove3DTiles(const FJsonLibraryObject& Value)
@@ -147,3 +182,80 @@ void URigelFunctionLibrary::Remove3DTiles(const FJsonLibraryObject& Value)
     FString layerID = Value.GetString(TEXT("LayerID"));
     ARigelLevelEditor::RigelLevel()->RemoveLayer(layerID);
 }
+
+void URigelFunctionLibrary::StartDrawing(const FJsonLibraryObject& Value)
+{
+    FString actorName = Value.GetString(TEXT("Name"));
+    //FString Url = Value.GetString(TEXT("URL"));
+    ARigelLevelEditor::RigelLevel()->StartDrawGeometry(actorName);
+}
+
+void URigelFunctionLibrary::EndDrawing(const FJsonLibraryObject& Value)
+{
+    //FString layerID = Value.GetString(TEXT("LayerID"));
+    //FString Url = Value.GetString(TEXT("URL"));
+    ARigelLevelEditor::RigelLevel()->EndDrawGeometry();
+}
+
+void URigelFunctionLibrary::RemoveActor(const FJsonLibraryObject& Value)
+{
+    FString ActorID = Value.GetString(TEXT("ActorID"));
+    ARigelLevelEditor::RigelLevel()->RemoveActor(ActorID);
+}
+
+void URigelFunctionLibrary::ClearRuntimeActors(const FJsonLibraryObject& Value)
+{
+    ARigelLevelEditor::RigelLevel()->ClearRuntimeActors();
+}
+
+void URigelFunctionLibrary::GetPawnTransform(const FJsonLibraryObject& Value)
+{
+    ARigelPawn* rigelPawn = Cast<ARigelPawn>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+    if (rigelPawn != nullptr)
+    {
+        FTransform pawnTransform = rigelPawn->GetTransform();
+        FString JsonString = FString::Printf(
+            TEXT("{\"type\":\"%s\", \"Location\":\"%s\", \"Rotator\":\"%s\"}"),
+            TEXT("GetPawnTransform"),
+            *pawnTransform.GetLocation().ToString(),
+            *pawnTransform.Rotator().ToString());
+        FJsonLibraryValue value = FJsonLibraryValue::Parse(JsonString);
+        ARigelLevelEditor::RigelLevel()->SendMessageToWeb(TEXT("ListenerUEMessage"), value);
+    }
+}
+
+void URigelFunctionLibrary::UseDefaultTerrain(const FJsonLibraryObject& Value)
+{
+    ARigelLevelEditor::RigelLevel()->UseDefaultTerrain();
+}
+
+void URigelFunctionLibrary::UpdateTerrainURL(const FJsonLibraryObject& Value)
+{
+    FString Url = Value.GetString(TEXT("URL"));
+    ARigelLevelEditor::RigelLevel()->UpdateTerrainURL(Url);
+}
+
+void URigelFunctionLibrary::AddWMSServer(const FJsonLibraryObject& Value)
+{
+    ServiceOption option;
+    FString layerID = Value.GetString(TEXT("LayerID"));
+    FString baseURL = Value.GetString(TEXT("BaseURL"));
+    auto optionObj = Value.GetObject(TEXT("Option"));
+    option.Layers = optionObj.GetString(TEXT("Layers"));
+    option.MinLevel = optionObj.GetInteger(TEXT("MinLevel"));
+    option.MaxLevel = optionObj.GetInteger(TEXT("MaxLevel"));
+    ARigelLevelEditor::RigelLevel()->AddWMSServer(layerID, baseURL, option);
+}
+
+void URigelFunctionLibrary::AddWMTSServer(const FJsonLibraryObject& Value)
+{
+    ServiceOption option;
+    FString layerID = Value.GetString(TEXT("LayerID"));
+    FString baseURL = Value.GetString(TEXT("BaseURL"));
+    auto optionObj = Value.GetObject(TEXT("Option"));
+    option.Layers = optionObj.GetString(TEXT("Layers"));
+    option.MinLevel = optionObj.GetInteger(TEXT("MinLevel"));
+    option.MaxLevel = optionObj.GetInteger(TEXT("MaxLevel"));
+    ARigelLevelEditor::RigelLevel()->AddWMTSServer(layerID, baseURL, option);
+}
+

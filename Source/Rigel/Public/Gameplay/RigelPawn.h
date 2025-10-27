@@ -10,6 +10,9 @@ class UPrimitiveComponent;
 class UFloatingPawnMovement;
 class UWidgetInteractionComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMapLevelChangeDelegate, int, OldLevel, int, Level);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPickLocationDelegate, const FVector&, Location);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLocationChangeDelegate, const FVector&, Location);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPickActorDelegate, AActor*, PickActor, UPrimitiveComponent*, PickComponent);
 
 UCLASS()
@@ -45,6 +48,9 @@ public:
     UFUNCTION(BlueprintCallable)
     void FlyToActor(float time, const AActor* actor);
 
+    UFUNCTION(BlueprintCallable)
+    void FlyToUE(float time, const FVector& Location, const FRotator& Rotation);
+
 protected:
 
     void Zoom(const FInputActionValue& Value);
@@ -77,6 +83,8 @@ protected:
 
     void MoveUp_Key(const FInputActionValue& Value);
 
+    //计算当前经纬度坐标
+    void CalcGeoLocation();
 public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Rigel")
     TObjectPtr<UCameraComponent> Camera;
@@ -150,6 +158,22 @@ public:
 
     UPROPERTY(BlueprintAssignable)
     FPickActorDelegate OnPickEvent;
+
+    UPROPERTY(BlueprintAssignable)
+    FPickLocationDelegate OnPickLocation;
+
+    UPROPERTY(BlueprintAssignable)
+    FLocationChangeDelegate OnLocationChange;
+
+    UPROPERTY(BlueprintAssignable)
+    FMapLevelChangeDelegate OnMapLevelChange;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Rigel")
+    int MapLevel = 1;
+
+    UPROPERTY(EditAnywhere, Category = "Rigel")
+    int MaxHeight = 30000000;
+
 private:
     double Distance = 0.0;
     bool IsMouseLeft = false;
@@ -157,6 +181,6 @@ private:
     //鼠标当前点击时和场景交点的世界坐标
     FVector PickWorldLocation;
 
-    
-
+    //实时计算当前经纬度坐标
+    FVector GeoLocation;
 };

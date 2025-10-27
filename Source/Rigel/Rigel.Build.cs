@@ -53,7 +53,8 @@ public class Rigel : ModuleRules
                 "MeshDescription",
                 "StaticMeshDescription",
                 "VectorLoader",
-                "GDALForUnreal"
+                "GDALForUnreal",
+                "JsonLibrary"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

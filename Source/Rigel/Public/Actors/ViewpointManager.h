@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/TextureRenderTarget2D.h"
 #include "ViewpointManager.generated.h"
 
 UCLASS(BlueprintType)
@@ -39,8 +40,6 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Rigel")
     class USceneCaptureComponent2D* SceneCapture;
-
-    class UTextureRenderTarget2D* RenderTarget;
 
     UPROPERTY(Category = "Rigel", EditAnywhere, BlueprintReadWrite, meta = (DisplayName = "视点列表"))
     TMap<FString, FViewpoint> ViewpointList;

@@ -83,16 +83,17 @@ void UAnimationPathComponent::PostEditChangeProperty(FPropertyChangedEvent& Prop
     Super::PostEditChangeProperty(PropertyChangedEvent);
 }
 
+#endif
+
 void UAnimationPathComponent::InitAnimation()
 {
     Spline = SplineActor->Spline;
-    if (Spline!= nullptr && Spline->GetNumberOfSplinePoints() > 1)
+    if (Spline != nullptr && Spline->GetNumberOfSplinePoints() > 1)
     {
         FVector startLocation = Spline->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World);
         GetOwner()->SetActorLocation(startLocation);
     }
 }
 
-#endif
 
 

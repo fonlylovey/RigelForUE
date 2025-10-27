@@ -9,6 +9,11 @@
 #include "Components/ViewpointComponent.h"
 #include "WebAPI/RigelAPISubsystem.h"
 #include "WebAPI/RigelLevelEditor.h"
+#include "KismetTraceUtils.h"
+#include "CesiumGeoreference.h"
+#include "Math/UnrealPlatformMathSSE.h"
+#include "CesiumMetadataPickingBlueprintLibrary.h"
+#include "Actors/POIBase.h"
 
 // Sets default values
 ARigelPawn::ARigelPawn(const FObjectInitializer& ObjectInitializer)
@@ -46,7 +51,7 @@ void ARigelPawn::BeginPlay()
 void ARigelPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+    CalcGeoLocation();
 }
 
 // Called to bind functionality to input
@@ -77,13 +82,13 @@ FVector ARigelPawn::PickLocation()
     FVector pickLocation = FVector::ZeroVector;;
     APlayerController* PlayerController = Cast<APlayerController>(Controller);
     if (PlayerController == nullptr) return pickLocation;
-
+    
     FVector Location, Direction;
     if (PlayerController->DeprojectMousePositionToWorld(Location, Direction))
     {
         FHitResult result;
 
-        GWorld->LineTraceSingleByChannel(result, Location, Direction * 10000000, ECC_Visibility);
+        GWorld->LineTraceSingleByChannel(result, Location, Location + Direction * 100000000, ECC_Camera);
         if (result.IsValidBlockingHit())
         {
             pickLocation = result.Location;
@@ -106,14 +111,16 @@ AActor* ARigelPawn::PickActor()
     if (PlayerController->DeprojectMousePositionToWorld(Location, Direction))
     {
         FHitResult result;
-        GWorld->LineTraceSingleByChannel(result, Location, Direction * 10000000, ECC_Visibility);
+        GWorld->LineTraceSingleByChannel(result, Location, Direction * 1000000000, ECC_Visibility);
+        //DrawDebugLineTraceSingle(GetWorld(), Location, Direction * 10000000, EDrawDebugTrace::ForDuration, true, result, FLinearColor::Red, FLinearColor::Green, 5.0);
         if (result.IsValidBlockingHit())
         {
             OnPickEvent.Broadcast(result.GetActor(), result.GetComponent());
-            auto pri = Cast<UPrimitiveComponent>(result.GetComponent());
-            if (pri != nullptr)
+            GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, result.GetActor()->GetActorNameOrLabel());
+            APOIBase* POI = Cast<APOIBase>(result.GetActor());
+            if (IsValid(POI))
             {
-                //ARigelLevelEditor::RigelLevel()->AddSelect(pri);
+                POI->OnClickedActorEvent();
             }
         }
     }
@@ -144,9 +151,14 @@ void ARigelPawn::FlyToViewpoint(float time, const FViewpoint& Viewpoint)
     ViewpointComponent->RoamingToViewpoint(time, Viewpoint);
 }
 
+void ARigelPawn::FlyToUE(float time, const FVector& Location, const FRotator& Rotation)
+{
+    ViewpointComponent->RoamingToUE(time, Location, Rotation);
+}
+
 void ARigelPawn::FlyToActor(float time, const AActor* actor)
 {
-
+    ViewpointComponent->RoamingToActor(time, actor);
 }
 
 void ARigelPawn::Zoom(const FInputActionValue& Value)
@@ -157,16 +169,19 @@ void ARigelPawn::Zoom(const FInputActionValue& Value)
     FVector pawnLocation = GetActorLocation();
     //计算从点击位置到pawn位置的向量，Pcik位置是原点，指向pawn
     FVector PawnDir = pawnLocation - PivotPoint;
-    double distance = PawnDir.Length();
-    float speed = delta / 10.0;
-    FVector2D aaa = FVector2D(distance, 0);
-    //GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, TEXT("没有相交:") + aaa.ToString());
-    FVector newLocation = UKismetMathLibrary::VLerp(pawnLocation, PivotPoint, speed);
+    
+    FVector newLocation = UKismetMathLibrary::VLerp(pawnLocation, PivotPoint, delta * 0.1);
+    if (newLocation.Z > MaxHeight)
+    {
+        return;
+    }
     SetActorLocation(newLocation, false);
+
+    
     if (FocusActor != nullptr)
     {
         FocusActor->SetActorHiddenInGame(false);
-        FocusActor->SetActorLocation(PickWorldLocation);
+        FocusActor->SetActorLocation(PivotPoint);
     }
 }
 
@@ -234,13 +249,9 @@ void ARigelPawn::PitchRotation(const FInputActionValue& Value)
     {
         FRotator rotateRotation = UKismetMathLibrary::ComposeRotators(GetActorRotation(), FRotator(deltaAngle, 0, 0));
         //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, rotateRotation.ToString());
-        if (rotateRotation.Pitch >= -85.0 && rotateRotation.Pitch <= 0)
-        {
-            //这个地方yaw角度要用Controller，不能用计算的rotateRotation
-            FRotator newRotator = FRotator(FMath::Clamp(rotateRotation.Pitch, -85.1, 0), ControllerRotator.Yaw, 0.0);
-            GetController()->SetControlRotation(newRotator);
-            
-        }
+        //这个地方yaw角度要用Controller，不能用计算的rotateRotation
+        FRotator newRotator = FRotator(FMath::Clamp(rotateRotation.Pitch, -85.1, 0), ControllerRotator.Yaw, 0.0);
+        GetController()->SetControlRotation(newRotator);
     }
     else
     {
@@ -288,10 +299,22 @@ void ARigelPawn::OnLeftMouseRelease(const FInputActionValue& Value)
 {
     IsMouseLeft = false;
     Distance = 0.0;
+    FVector releaseLocation = PickLocation();
+    auto geoRef = ACesiumGeoreference::GetDefaultGeoreference(GetWorld());
+    if (geoRef != nullptr)
+    {
+        auto GISLocation = geoRef->TransformUnrealPositionToLongitudeLatitudeHeight(releaseLocation);
+        GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, GISLocation.ToString());
+       
+    }
     //鼠标按下的位置和鼠标释放的位置相近，视为点击否则是拖拽
-    if (PickWorldLocation.Equals(PickLocation(), 0.0001))
+    if (PickWorldLocation.Equals(releaseLocation, 0.0001))
     {
         PickActor();
+        if (OnPickLocation.IsBound())
+        {
+            OnPickLocation.Broadcast(releaseLocation);
+        }
     }
     
     if (FocusActor != nullptr)
@@ -421,5 +444,45 @@ void ARigelPawn::MoveUp_Key(const FInputActionValue& Value)
     FVector2D delta = Value.Get<FVector2D>();
 
     AddActorWorldOffset(FVector(0, 0, delta.X * speed));
+}
+
+void ARigelPawn::CalcGeoLocation()
+{
+    auto geoRef = ACesiumGeoreference::GetDefaultGeoreference(GetWorld());
+    if (geoRef != nullptr)
+    {
+        GeoLocation = geoRef->TransformUnrealPositionToLongitudeLatitudeHeight(GetActorLocation());
+        OnLocationChange.Broadcast(GeoLocation);
+        //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, GeoLocation.ToString());
+        float A = 40487.57;
+        float B = 0.00007096758;
+        float C = 91610.74;
+        float D = -40467.74;
+        int level = FMath::RoundToInt(D + (A - D) / (1 + FMath::Pow(FMath::Max(0, GeoLocation.Z * 0.8) / C, B)));
+        if (level != MapLevel)
+        {
+            OnMapLevelChange.Broadcast(MapLevel, level);
+            MapLevel = level;
+        }
+    }
+
+    /*FVector2D viewportSize;
+    {
+        APlayerController* PlayerController = Cast<APlayerController>(Controller);
+        if (PlayerController != nullptr)
+        {
+            ULocalPlayer* const LocalPlayer = PlayerController->GetLocalPlayer();
+            if (LocalPlayer && LocalPlayer->ViewportClient)
+            {
+                LocalPlayer->ViewportClient->GetViewportSize(viewportSize);
+            }
+            FVector Location, Direction;
+            if (PlayerController->DeprojectMousePositionToWorld(Location, Direction))
+            {
+
+            }
+        }
+
+    }*/
 }
 

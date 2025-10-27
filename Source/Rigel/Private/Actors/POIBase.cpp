@@ -12,7 +12,9 @@
 #if WITH_EDITOR
 #include "Editor/UnrealEd/Public/EditorViewportClient.h"
 #endif
-
+#include "WebAPI/RigelLevelEditor.h"
+#include "JsonLibraryValue.h"
+#include "JsonLibraryObject.h"
 // Sets default values
 APOIBase::APOIBase()
 {
@@ -23,22 +25,47 @@ APOIBase::APOIBase()
     WidgetComponent->SetupAttachment(RootComponent);
 }
 
-void APOIBase::OnClickedActorEvent_Implementation(AActor* TouchedActor, FKey ButtonPressed)
+void APOIBase::OnClickedActorEvent_Implementation()
 {
+    GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Pick Actor"));
+    if (IsValid(ARigelLevelEditor::RigelLevel()))
+    {
+        FString JsonString = FString::Printf(
+            TEXT("{\"id\":\"%s\", \"type\":\"%s\", \"data\":%s}"),
+            *ID,
+            *Type,
+            *JsonValue
+        );
+        FJsonLibraryValue value = FJsonLibraryValue::Parse(JsonString);
+        ARigelLevelEditor::RigelLevel()->SendMessageToWeb(TEXT("ListenerUEMessage"), value);
 
+    }
 }
 
-void APOIBase::OnClickedComonetEvent_Implementation(UPrimitiveComponent* TouchedComponent, FKey ButtonPressed)
+void APOIBase::OnClickedComonetEvent_Implementation()
 {
+    
+}
 
+void APOIBase::UpdateJson_Implementation()
+{
 }
 
 // Called when the game starts or when spawned
 void APOIBase::BeginPlay()
 {
 	Super::BeginPlay();
-    WidgetComponent->OnClicked.AddDynamic(this, &APOIBase::OnClickedComonetEvent);
-    OnClicked.AddDynamic(this, &APOIBase::OnClickedActorEvent);
+    /*
+     if (!WidgetComponent->OnClicked.IsBound())
+     {
+         WidgetComponent->OnClicked.AddDynamic(this, &APOIBase::OnClickedComonetEvent);
+     }
+    if (!OnClicked.IsBound())
+    {
+        OnClicked.AddDynamic(this, &APOIBase::OnClickedActorEvent);
+    }
+    */
+    //bIsSpatiallyLoaded = 0;
 }
 
 void APOIBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -115,11 +142,11 @@ void APOIBase::Tick(float DeltaTime)
         FVector location = this->GetActorLocation();
         
         FRotator lookAt = UKismetMathLibrary::FindLookAtRotation(location, cameraLocation);
-        WidgetComponent->SetWorldRotation(FRotator(0, lookAt.Yaw, 0));
+        WidgetComponent->SetWorldRotation(FRotator(0, lookAt.Yaw, 0.0));
         //自动缩放
        
         double dis = FVector::Distance(location, cameraLocation);
-        int scale = (int)dis / ScaleFactor * 0.01;
+        int scale = (int)dis /ScaleFactor;
         if (AtMaxHide)
         {
             bool hideActor = scale > MaxScale ? true : false;

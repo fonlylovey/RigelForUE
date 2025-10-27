@@ -48,6 +48,8 @@ public:
     void RoamingToViewpoint(float time, const FViewpoint& Viewpoint);
 
     void RoamingToActor(float time, const AActor* Actor);
+
+    void RoamingToUE(float time, const FVector& Location, const FRotator& Rotation);
 public:
 
 
@@ -60,4 +62,5 @@ private:
     bool Playing = false;
     FTransform StartTransform;
     FTransform TargetTransform;
+    class APlayerController* PlayerController = nullptr;
 };

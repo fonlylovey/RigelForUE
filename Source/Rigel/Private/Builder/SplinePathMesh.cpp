@@ -41,12 +41,28 @@ void ASplinePathMesh::UpdateSplineMesh()
         int32 pointNum = Spline->GetNumberOfSplinePoints();
         ClearInstanceComponents(true);
         float totalLength = Spline->GetSplineLength();
-        for (int i = 0; i < pointNum - 1; i++)
+        for (int i = 0; i < pointNum; i++)
         {
             FVector pointA, pointB, tangentA, tangentB;
-            Spline->GetLocationAndTangentAtSplinePoint(i, pointA, tangentA, ESplineCoordinateSpace::Local);
-            Spline->GetLocationAndTangentAtSplinePoint(i + 1, pointB, tangentB, ESplineCoordinateSpace::Local);
+            if (i == pointNum - 1)
+            {
+                if (Spline->IsClosedLoop())
+                {
+                    Spline->GetLocationAndTangentAtSplinePoint(i, pointA, tangentA, ESplineCoordinateSpace::Local);
+                    Spline->GetLocationAndTangentAtSplinePoint(0, pointB, tangentB, ESplineCoordinateSpace::Local);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            else
+            {
+                Spline->GetLocationAndTangentAtSplinePoint(i, pointA, tangentA, ESplineCoordinateSpace::Local);
+                Spline->GetLocationAndTangentAtSplinePoint(i + 1, pointB, tangentB, ESplineCoordinateSpace::Local);
+            }
             
+
             float distanceStrat = Spline->GetDistanceAlongSplineAtSplinePoint(i);
             float distanceEnd = Spline->GetDistanceAlongSplineAtSplinePoint(i + 1);
             UMaterialInstanceDynamic* segmentMaterial = nullptr;
@@ -78,6 +94,7 @@ void ASplinePathMesh::UpdateSplineMesh()
             AddInstanceComponent(segmentMesh);
             segmentMesh->RegisterComponent();
         }
+        
     }
 }
 

@@ -5,6 +5,9 @@
 #include "GeoReferencingSystem.h"
 #include "MeshDescription.h"
 #include "StaticMeshAttributes.h"
+#include "JsonLibraryHelpers.h"
+#include "JsonLibraryObject.h"
+#include "GeoJson/GeoJsonFeatureCollection.h"
 
 void URigelGeoFunctionLibrary::ProjectMeshesToEngine(AGeoReferencingSystem* GeoReferencingSystem, UStaticMeshComponent* StaticMeshComponent, const FVector Offset)
 {
@@ -55,3 +58,61 @@ void URigelGeoFunctionLibrary::ProjectMeshesToEngine(AGeoReferencingSystem* GeoR
 	StaticMesh->MarkPackageDirty();
 #endif
 }
+
+bool URigelGeoFunctionLibrary::ReadGeojsonByFile(const FString& FilePath, FGeoJsonFeatureCollection& OutData)
+{
+    if (!FPaths::FileExists(FilePath))
+    {
+        FFrame::KismetExecutionMessage(*FString::Printf(TEXT("File not found: %s"), *FilePath), ELogVerbosity::Error);
+        return false;
+    }
+
+    FString JsonString;
+    if (!FFileHelper::LoadFileToString(JsonString, *FilePath))
+    {
+        FFrame::KismetExecutionMessage(*FString::Printf(TEXT("Error loading file: %s"), *FilePath), ELogVerbosity::Error);
+        return false;
+    }
+    
+    FJsonLibraryObject jsonObj = FJsonLibraryObject::Parse(JsonString);
+    if (jsonObj.IsValid())
+    {
+        FGeoJsonFeatureCollection featureCollection;
+        TArray<FJsonLibraryValue> featureList = jsonObj.GetArray("features");
+        for(FJsonLibraryValue featureVal : featureList)
+        {
+            
+            FJsonLibraryObject featureObj = featureVal.GetObject();
+
+            FJsonLibraryObject propertiesObj = featureObj.GetObject("properties");
+            FJsonLibraryObject geometryObj = featureObj.GetObject("geometry");
+
+            
+            
+            FGeoJsonFeature* feature = new FGeoJsonFeature;
+            if (geometryObj.GetString("type") == "Point")
+            {
+                TArray<FJsonLibraryValue> pointVal = geometryObj.GetArray("coordinates");
+                FVector point = FVector(pointVal[0].GetFloat(), pointVal[1].GetFloat(), pointVal[2].GetFloat());
+                FGeoJsonPoint* geometry = new FGeoJsonPoint;
+                geometry->Point = point;
+                geometry->Type = EGeoJsonObjectType::Point;
+                feature->Geometry = geometry;
+
+                FGeoJsonProperties* properties = new FGeoJsonProperties;
+                feature->Properties = properties;
+            }
+            
+            featureCollection.Features.Add(feature);
+        }
+        OutData = MoveTemp(featureCollection);
+        return true;
+    }
+    return false;
+}
+
+void URigelGeoFunctionLibrary::ReadGeojsonByString(const FString& JsonData, FGeoJsonFeatureCollection& OutData)
+{
+
+}
+

@@ -46,7 +46,7 @@ public:
 
     //The material used by the spline
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EarthBuilder")
-    UMaterial* SplineMaterial;
+    UMaterialInstance* SplineMaterial;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EarthBuilder")
     float Width = 1.0;

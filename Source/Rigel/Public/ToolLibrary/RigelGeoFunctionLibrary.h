@@ -24,6 +24,10 @@ public:
 	 * @param StaticMeshComponent 
 	 * @param Offset Length unit is m.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Abcim")
+	UFUNCTION(BlueprintCallable, Category="Rigel")
 	static void ProjectMeshesToEngine(AGeoReferencingSystem* GeoReferencingSystem, UStaticMeshComponent* StaticMeshComponent, const FVector Offset);
+
+    static bool ReadGeojsonByFile(const FString& FilePath, FGeoJsonFeatureCollection& OutData);
+
+    static void ReadGeojsonByString(const FString& JsonData, FGeoJsonFeatureCollection& OutData);
 };
