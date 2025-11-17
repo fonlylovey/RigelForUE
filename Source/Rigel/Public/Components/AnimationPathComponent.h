@@ -42,25 +42,25 @@ private:
     void InitAnimation();
 
 public:
-    UPROPERTY(EditAnywhere, Category = "Rigel")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rigel")
     ASplinePathMesh* SplineActor;
 
     UPROPERTY()
     USplineComponent* Spline;
 
-    // ÊÇ·ñÑ­»·ÔË¶¯
+    // ï¿½Ç·ï¿½Ñ­ï¿½ï¿½ï¿½Ë¶ï¿½
     UPROPERTY(EditAnywhere, Category = "Rigel")
     bool LoopPlay = false;
 
-    // ÔÝÍ£²¥·Å£¬²»»Øµ½³õÊ¼Î»ÖÃ
+    // ï¿½ï¿½Í£ï¿½ï¿½ï¿½Å£ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½Ê¼Î»ï¿½ï¿½
     UPROPERTY(EditAnywhere, Category = "Rigel")
     bool PausePlay = true;
 
-    // ÔÝÍ£²¥·Å£¬²»»Øµ½³õÊ¼Î»ÖÃ
+    // ï¿½ï¿½Í£ï¿½ï¿½ï¿½Å£ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½Ê¼Î»ï¿½ï¿½
     UPROPERTY(EditAnywhere, Category = "Rigel")
     float Speed = 50.0;
 
-    // ÔÝÍ£²¥·Å£¬²»»Øµ½³õÊ¼Î»ÖÃ
+    // ï¿½ï¿½Í£ï¿½ï¿½ï¿½Å£ï¿½ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½Ê¼Î»ï¿½ï¿½
     UPROPERTY()
     float RunningTime = 0.0;
 };

@@ -79,4 +79,5 @@ public:
 
     UFUNCTION(BlueprintCallable)
     static void AddWMTSServer(const FJsonLibraryObject& Value);
+
 };

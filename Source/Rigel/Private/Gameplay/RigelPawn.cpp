@@ -51,7 +51,6 @@ void ARigelPawn::BeginPlay()
 void ARigelPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-    CalcGeoLocation();
 }
 
 // Called to bind functionality to input
@@ -183,6 +182,7 @@ void ARigelPawn::Zoom(const FInputActionValue& Value)
         FocusActor->SetActorHiddenInGame(false);
         FocusActor->SetActorLocation(PivotPoint);
     }
+    CalcGeoLocation();
 }
 
 void ARigelPawn::YawRotation(const FInputActionValue& Value)
@@ -224,7 +224,7 @@ void ARigelPawn::YawRotation(const FInputActionValue& Value)
         FRotator rotateRotation = UKismetMathLibrary::ComposeRotators(GetActorRotation(), rotatorPick);
         GetController()->SetControlRotation(rotateRotation);
     }
-   
+    CalcGeoLocation();
 }
 
 void ARigelPawn::PitchRotation(const FInputActionValue& Value)
@@ -276,7 +276,7 @@ void ARigelPawn::PitchRotation(const FInputActionValue& Value)
             
         }
     }
-   
+    CalcGeoLocation();
 }
 
 void ARigelPawn::Focus(const FInputActionValue& Value)
@@ -365,6 +365,7 @@ void ARigelPawn::MoveForward(const FInputActionValue& Value)
         const FVector ForwardDirection = FRotationMatrix(YanRotation).GetUnitAxis(EAxis::X);
 
         AddActorWorldOffset(ForwardDirection * delta.X * speed);
+        CalcGeoLocation();
     }
     
 } 
@@ -393,6 +394,7 @@ void ARigelPawn::MoveRight(const FInputActionValue& Value)
         const FVector RightDirection = FRotationMatrix(YanRotation).GetUnitAxis(EAxis::Y);
 
         AddActorWorldOffset(RightDirection * delta.X * speed * -1);
+        CalcGeoLocation();
     }
 }
 
@@ -412,6 +414,7 @@ void ARigelPawn::MoveForward_Key(const FInputActionValue& Value)
 
     const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::X);
     AddActorWorldOffset(ForwardDirection * delta.X * speed);
+    CalcGeoLocation();
 }
 
 void ARigelPawn::MoveRight_Key(const FInputActionValue& Value)
@@ -430,6 +433,7 @@ void ARigelPawn::MoveRight_Key(const FInputActionValue& Value)
 
     const FVector RightDirection = FRotationMatrix(YanRotation).GetUnitAxis(EAxis::Y);
     AddActorWorldOffset(RightDirection * delta.X * speed);
+    CalcGeoLocation();
 }
 
 void ARigelPawn::MoveUp_Key(const FInputActionValue& Value)
@@ -444,6 +448,7 @@ void ARigelPawn::MoveUp_Key(const FInputActionValue& Value)
     FVector2D delta = Value.Get<FVector2D>();
 
     AddActorWorldOffset(FVector(0, 0, delta.X * speed));
+    CalcGeoLocation();
 }
 
 void ARigelPawn::CalcGeoLocation()
@@ -452,7 +457,7 @@ void ARigelPawn::CalcGeoLocation()
     if (geoRef != nullptr)
     {
         GeoLocation = geoRef->TransformUnrealPositionToLongitudeLatitudeHeight(GetActorLocation());
-        OnLocationChange.Broadcast(GeoLocation);
+        OnViewChange.Broadcast(GeoLocation, GetControlRotation());
         //GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, GeoLocation.ToString());
         float A = 40487.57;
         float B = 0.00007096758;
@@ -466,23 +471,5 @@ void ARigelPawn::CalcGeoLocation()
         }
     }
 
-    /*FVector2D viewportSize;
-    {
-        APlayerController* PlayerController = Cast<APlayerController>(Controller);
-        if (PlayerController != nullptr)
-        {
-            ULocalPlayer* const LocalPlayer = PlayerController->GetLocalPlayer();
-            if (LocalPlayer && LocalPlayer->ViewportClient)
-            {
-                LocalPlayer->ViewportClient->GetViewportSize(viewportSize);
-            }
-            FVector Location, Direction;
-            if (PlayerController->DeprojectMousePositionToWorld(Location, Direction))
-            {
-
-            }
-        }
-
-    }*/
 }
 

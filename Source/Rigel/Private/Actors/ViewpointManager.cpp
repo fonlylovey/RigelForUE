@@ -1,11 +1,11 @@
 #include "Actors/ViewpointManager.h"
 #include "Components/ViewpointComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
-
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetRenderingLibrary.h"
 #include "Components/SceneComponent.h"
+#include "Camera/CameraComponent.h"
 
 // Sets default values
 AViewpointManager::AViewpointManager()

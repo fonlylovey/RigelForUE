@@ -126,18 +126,18 @@ void UViewpointComponent::RoamingToActor(float time, const AActor* Actor)
         UE_LOG(LogTemp, Log, TEXT("Using fallback distance for actor %s"), *Actor->GetName());
     }
     FVector TargetForward = Actor->GetActorForwardVector();
-    //dir.X = 0;
-    //dir.Y = 0;
-    //dir.Z = 0;
+    FVector OffsetHorizontalDir = TargetForward.RotateAngleAxis(15.0, FVector::UpVector);
+    OffsetHorizontalDir.Normalize();
+   
     FVector NewPawnLocation = Actor->GetActorLocation() - (TargetForward * 100000);
     NewPawnLocation.Z = CalculatedDistance;
+
     FVector DirectionToTarget = (Actor->GetActorLocation() - NewPawnLocation).GetSafeNormal();
-    //FRotator lookAt = UKismetMathLibrary::FindLookAtRotation(owner->GetActorLocation(), target);
     FRotator NewPawnRotation = DirectionToTarget.Rotation(); // 转为旋转
-    
+    NewPawnRotation.Yaw -= 15.0;
     TargetTransform.SetLocation(NewPawnLocation);
     TargetTransform.SetRotation(NewPawnRotation.Quaternion());
-    
+
     Runtime = 0.0;
     Duration = time;
     Playing = true;

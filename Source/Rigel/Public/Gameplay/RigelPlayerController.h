@@ -15,11 +15,11 @@ class RIGEL_API ARigelPlayerController : public APlayerController
 public:
     ARigelPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-    //接收Web端发送的消息
+    //锟斤拷锟斤拷Web锟剿凤拷锟酵碉拷锟斤拷息
     UFUNCTION()
     void OnMessageByWeb(const FString& Data);
 
-    //向web端发送消息
+    //锟斤拷web锟剿凤拷锟斤拷锟斤拷息
     void SendMessageToWeb(const FString& Data);
 
 protected:

@@ -7,6 +7,7 @@
 struct FJsonLibraryValue;
 class ASplinePathMesh;
 class ACesium3DTileset;
+class UCesiumRasterOverlay;
 
 struct ServiceOption
 {
@@ -33,6 +34,12 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (Tooltip = "从Map中获取Actor"))
 	AActor* GetActor(const FString& Name);
+
+    UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (Tooltip = "从运行时创建的Actor容器中获取Actor"))
+    AActor* GetRuntimeActor(const FString& Name);
+
+    UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (Tooltip = "从运行时创建的Actor容器中删除Actor"))
+    void RemoveRuntimeActor(const FString& Name);
 
     UFUNCTION(BlueprintCallable, Category = "Rigel", meta = (Tooltip = "从关卡中查找Actor"))
     AActor* FindActor(const FString& Name);
@@ -116,6 +123,9 @@ public:
 
     UPROPERTY(EditAnywhere, Blueprintable, BlueprintReadWrite, Category = "Rigel")
     TMap<FString, AActor*> RuntimeMap;
+
+    UPROPERTY(EditAnywhere, Blueprintable, BlueprintReadWrite, Category = "Rigel")
+    TMap<FString, UCesiumRasterOverlay*> ServerMap;
 
     UPROPERTY(Blueprintable, BlueprintReadOnly, Category = "Rigel")
     FString HtmlURL;

@@ -2,6 +2,7 @@
 
 #include "EngineUtils.h"
 #undef OPAQUE
+
 #include "Cesium3DTileset.h"
 #include "WebAPI/WebWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -13,6 +14,7 @@
 #include "Gameplay/RigelPlayerController.h"
 #include "CesiumWebMapServiceRasterOverlay.h"
 #include "CesiumWebMapTileServiceRasterOverlay.h"
+#include "Components/SplineComponent.h"
 
 // Sets default values
 ARigelLevelEditor::ARigelLevelEditor()
@@ -98,6 +100,25 @@ AActor* ARigelLevelEditor::GetActor(const FString& Name)
     return  actor;
 }
 
+AActor* ARigelLevelEditor::GetRuntimeActor(const FString& Name)
+{
+    AActor* actor = RuntimeMap.FindRef(Name);
+    if (!IsValid(actor))
+    {
+        actor = RuntimeMap.FindRef(Name);
+    }
+    return  actor;
+}
+
+void ARigelLevelEditor::RemoveRuntimeActor(const FString& Name)
+{
+    AActor* actor = RuntimeMap.FindRef(Name);
+    if (!IsValid(actor))
+    {
+        RuntimeMap.Remove(Name);
+        GetWorld()->DestroyActor(actor);
+    }
+}
 AActor* ARigelLevelEditor::FindActor(const FString& Name)
 {
     AActor* actor = GetActor(Name);
@@ -194,10 +215,13 @@ void ARigelLevelEditor::ClearSelect()
 
 void ARigelLevelEditor::SendMessageToWeb(const FString& Function, const FJsonLibraryValue& Data)
 {
+#if WITH_EDITOR
+
     if (WebWidget != nullptr)
     {
         WebWidget->SendMessage(Function, Data);
     }
+#endif
 
     ARigelPlayerController* rigelController = Cast<ARigelPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
     if (IsValid(rigelController))
@@ -324,6 +348,7 @@ void ARigelLevelEditor::AddWMSServer(const FString& LayerID, const FString& Base
         overlay->MaximumLevel = option.MaxLevel;
         overlay->MaterialLayerKey = "Overlay1";
         World-> AddInstanceComponent(overlay);
+        ServerMap.Add(LayerID, overlay);
     } 
 }
 
@@ -338,6 +363,7 @@ void ARigelLevelEditor::AddWMTSServer(const FString& LayerID, const FString& Bas
         overlay->MaximumLevel = option.MaxLevel;
         overlay->MaterialLayerKey = "Overlay1";
         World->AddInstanceComponent(overlay);
+        ServerMap.Add(LayerID, overlay);
     }
 }
 

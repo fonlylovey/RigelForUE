@@ -14,21 +14,21 @@ public:
 
     virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-    /** ÊÇ·ñÊ¼ÖÕ³¯ÏòÏà»ú */
+    /** ï¿½Ç·ï¿½Ê¼ï¿½Õ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rigel Billboard")
     bool bAlwaysFaceCamera;
 
-    /** ÊÇ·ñ¸ù¾Ý¾àÀë×Ô¶¯Ëõ·Å */
+    /** ï¿½Ç·ï¿½ï¿½ï¿½Ý¾ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rigel Billboard")
     bool bAutoScaleWithDistance;
 
-    /** »ù´¡´óÐ¡£¨µ¥Î»£ºÀåÃ×£© */
+    /** ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½×£ï¿½ */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Rigel Billboard")
     float BaseSize;
 
     void CreateMaterial();
 protected:
-    /** ¸üÐÂ±ä»»ÒÔ³¯ÏòÏà»ú */
+    /** ï¿½ï¿½ï¿½Â±ä»»ï¿½Ô³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
     void UpdateBillboardTransform();
 
     void CreateGeometry(FStaticMeshRenderData* RenderData);

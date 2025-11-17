@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Engine/TextureRenderTarget2D.h"
+#include "Components/ViewpointComponent.h"
 #include "ViewpointManager.generated.h"
 
 UCLASS(BlueprintType)

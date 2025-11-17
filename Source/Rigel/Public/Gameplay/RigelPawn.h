@@ -12,7 +12,7 @@ class UWidgetInteractionComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMapLevelChangeDelegate, int, OldLevel, int, Level);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPickLocationDelegate, const FVector&, Location);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLocationChangeDelegate, const FVector&, Location);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FViewChangeDelegate, const FVector&, Location, const FRotator&, Rotator);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPickActorDelegate, AActor*, PickActor, UPrimitiveComponent*, PickComponent);
 
 UCLASS()
@@ -163,7 +163,7 @@ public:
     FPickLocationDelegate OnPickLocation;
 
     UPROPERTY(BlueprintAssignable)
-    FLocationChangeDelegate OnLocationChange;
+    FViewChangeDelegate OnViewChange;
 
     UPROPERTY(BlueprintAssignable)
     FMapLevelChangeDelegate OnMapLevelChange;

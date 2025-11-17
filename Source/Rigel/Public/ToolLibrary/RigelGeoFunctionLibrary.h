@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "GeoJson/GeoJsonFeatureCollection.h"
 #include "RigelGeoFunctionLibrary.generated.h"
 
 class AGeoReferencingSystem;

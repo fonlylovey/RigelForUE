@@ -18,6 +18,7 @@ UAnimationPathComponent::UAnimationPathComponent()
 void UAnimationPathComponent::PlayAnimationPath_Implementation()
 {
     PausePlay = false;
+    InitAnimation();
 }
 
 void UAnimationPathComponent::StopAnimationPath_Implementation()
@@ -50,9 +51,9 @@ void UAnimationPathComponent::TickComponent(float DeltaTime, ELevelTick TickType
     if (!PausePlay)
     {
         RunningTime += DeltaTime;
-        float Duration = Spline->GetSplineLength() / Speed / 100.0;
-        FVector location = Spline->GetLocationAtTime(RunningTime / Duration, ESplineCoordinateSpace::World);
-        FRotator rotator = Spline->GetTangentAtTime(RunningTime / Duration, ESplineCoordinateSpace::World).Rotation();
+        float Duration = SplineActor->Spline->GetSplineLength() / Speed / 100.0;
+        FVector location = SplineActor->Spline->GetLocationAtTime(RunningTime / Duration, ESplineCoordinateSpace::World);
+        FRotator rotator = SplineActor->Spline->GetTangentAtTime(RunningTime / Duration, ESplineCoordinateSpace::World).Rotation();
         GetOwner()->SetActorLocationAndRotation(location, rotator);
         if (RunningTime > Duration)
         {

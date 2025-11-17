@@ -3,6 +3,9 @@
 #include "CoreMinimal.h"
 #include <array>
 #include <vector>
+#include "../include/ogr_geometry.h"
+#include "VectorCommon.h"
+#include "../include/ogr_spatialref.h"
 
  /*
 * https://github.com/mapbox/earcut.hpp

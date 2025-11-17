@@ -40,11 +40,7 @@
             "Name": "CesiumForUnreal",
             "Enabled": true,
             "SupportedTargetPlatforms": [
-                "Win64",
-                "Mac",
-                "Linux",
-                "Android",
-                "IOS"
+                "Win64"
             ]
         },
         {
@@ -71,10 +67,6 @@
         },
         {
             "Name": "WebUI",
-            "Enabled": true
-        },
-        {
-            "Name": "JsonLibrary",
             "Enabled": true
         }
     ],
