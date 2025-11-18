@@ -112,11 +112,17 @@ AActor* ARigelLevelEditor::GetRuntimeActor(const FString& Name)
 
 void ARigelLevelEditor::RemoveRuntimeActor(const FString& Name)
 {
+    if (!RuntimeMap.Contains(Name))
+    {
+        return;
+    }
+
     AActor* actor = RuntimeMap.FindRef(Name);
-    if (!IsValid(actor))
+    if (IsValid(actor))
     {
         RuntimeMap.Remove(Name);
-        GetWorld()->DestroyActor(actor);
+        //GetWorld()->DestroyActor(actor);
+        actor->Destroy(true);
     }
 }
 AActor* ARigelLevelEditor::FindActor(const FString& Name)

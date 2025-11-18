@@ -59,9 +59,12 @@ struct RIGEL_API FTreeNode
     }
 
     //自己是否显示，根节点一定是显示的
-    bool IsChildrenDispaly() { return Display; }
-    void SetChildrenDisplay(bool IsDisplay) { Display = IsDisplay; }
+    bool IsDispaly() { return Display; }
+    void SetDisplay(bool IsDisplay) { Display = IsDisplay; }
 
+    bool HasChildren();
+
+    int GetDepth() { return Depth; };
 public:
     FString NodeID = TEXT("");
     TArray<FTreeNode*> Children;

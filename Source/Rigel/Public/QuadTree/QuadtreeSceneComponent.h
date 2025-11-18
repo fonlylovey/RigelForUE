@@ -40,6 +40,8 @@ public:
 
     void Traversal(FTreeNode* NodePath, bool isCreate = true);
 
+    bool GetNodesByDepth(FTreeNode* NodePath, int32 TargetDepth, TArray<FPOIData>& OutNodeDatas);
+
 public:
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     FVector Center = FVector(106.594627, 29.573882, 0);
@@ -61,6 +63,8 @@ public:
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     int CurrentDepth = 1;
+
+    void CalcDepth(int level);
 
 protected:
     virtual void BeginPlay() override;

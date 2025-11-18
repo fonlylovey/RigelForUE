@@ -26,7 +26,7 @@ void UQuadtreeSceneComponent::BeginPlay()
     if (RootNode == nullptr)
     {
         RootNode = new FTreeNode(Center, Width, Height, 0, MaxTreeDepth);
-        RootNode->SetChildrenDisplay(false);
+        RootNode->SetDisplay(true);
         RootNode->Children.Empty();
     }
 }
@@ -71,14 +71,14 @@ void UQuadtreeSceneComponent::ClearAllNode()
 
 void UQuadtreeSceneComponent::Update(int level)
 {
-    if (level > CurrentZoomLevel)
+    if (level > CurrentZoomLevel && CurrentDepth <= MaxTreeDepth)
     {
-        CurrentDepth++;
+        CalcDepth(level);
         Subdivide();
     }
-    else if (level < CurrentZoomLevel)
+    else if (level < CurrentZoomLevel && CurrentDepth >= 1)
     {
-        CurrentDepth--;
+        CalcDepth(level);
         Combine();
     }
     CurrentZoomLevel = level;
@@ -86,58 +86,139 @@ void UQuadtreeSceneComponent::Update(int level)
 
 void UQuadtreeSceneComponent::Combine()
 {
-    Traversal(RootNode, false);
+    TArray<FPOIData> DataList;
+    if (GetNodesByDepth(RootNode, CurrentDepth + 1, DataList))
+    {
+        for (FPOIData& poiData : DataList)
+        {
+            OnDeletePOI.Broadcast(poiData);
+            FString strMsg = TEXT("删除：") + poiData.ID;
+            GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, strMsg);
+        }
+    }
 }
 
 void UQuadtreeSceneComponent::Subdivide()
 {
-    Traversal(RootNode, true);
-}
+    // 队列存储「节点+当前深度」（避免重复调用 GetDepth()，优化性能）
+    TQueue<TTuple<FTreeNode*, int32>> NodeQueue;
+    NodeQueue.Enqueue(MakeTuple(RootNode, RootNode->GetDepth()));
 
-void UQuadtreeSceneComponent::Traversal(FTreeNode* NodePath, bool isCreate /*= true*/)
-{
-    if (isCreate)
+    while (!NodeQueue.IsEmpty())
     {
-        //如果自己的子节点已经显示就递归子节点
-        if (NodePath->IsChildrenDispaly())
+        TTuple<FTreeNode*, int32> CurrentTuple;
+        if (NodeQueue.Dequeue(CurrentTuple))
         {
-            for (FTreeNode* child : NodePath->Children)
+            FTreeNode* CurrentNode = CurrentTuple.Key;
+            int32 CurrentNodeDepth = CurrentTuple.Value;
+
+            if (CurrentNode && CurrentNodeDepth <= CurrentDepth)
             {
-                Traversal(child, isCreate);
-            }
-        }
-        else //如果没有显示，就显示子节点
-        {
-            for (FTreeNode* child : NodePath->Children)
-            {
-                //SpawnPOI(child->GetPOIData());
-                OnSpawnPOI.Broadcast(child->GetPOIData());
-                FString strMsg = TEXT("创建：") + child->GetPOIData().ID;
+                OnSpawnPOI.Broadcast(CurrentNode->GetPOIData());
+                FString strMsg = TEXT("创建：") + CurrentNode->GetPOIData().ID;
                 GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, strMsg);
             }
-            NodePath->SetChildrenDisplay(true);
-            return;
-        }
-    }
-    else
-    {
-        //如果自己的子节点已经显示就递归子节点
-        if (NodePath->IsChildrenDispaly())
-        {
-            for (FTreeNode* child : NodePath->Children)
+            else
             {
-                Traversal(child, isCreate);
+                continue;
+            }
+
+            // 子节点入队（仅当当前节点深度 < MaxDepth 时，才入队子节点）
+            // 优化：如果当前节点已达最大深度，其子节点无需入队，减少队列开销
+            if (CurrentNode && CurrentNodeDepth < CurrentDepth)
+            {
+                for (FTreeNode* Child : CurrentNode->Children)
+                {
+                    if (Child)
+                    {
+                        NodeQueue.Enqueue(MakeTuple(Child, Child->GetDepth()));
+                    }
+                }
             }
         }
-        else //如果子节点没有显示，就删除自己
+    }
+}
+
+
+
+bool UQuadtreeSceneComponent::GetNodesByDepth(FTreeNode* NodePath, int32 TargetDepth, TArray<FPOIData>& OutNodeDatas)
+{
+    // 初始化输出数组（清空原有数据）
+    OutNodeDatas.Empty();
+
+    // 安全校验
+    if (!NodePath)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("GetNodesByDepth: RootNode is null!"));
+        return false;
+    }
+    if (TargetDepth < 0)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("GetNodesByDepth: TargetDepth cannot be negative!"));
+        return false;
+    }
+
+    // 广度优先遍历（仅遍历到目标深度，避免多余计算）
+    TQueue<TTuple<FTreeNode*, int32>> NodeQueue;
+    NodeQueue.Enqueue(MakeTuple(NodePath, NodePath->GetDepth()));
+
+    while (!NodeQueue.IsEmpty())
+    {
+        TTuple<FTreeNode*, int32> CurrentTuple;
+        if (NodeQueue.Dequeue(CurrentTuple))
         {
-            //DeletePOI(NodePath->GetPOIData());
-            OnDeletePOI.Broadcast(NodePath->GetPOIData());
-            FString strMsg = TEXT("删除：") + NodePath->GetPOIData().ID;
-            GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, strMsg);
-            NodePath->SetChildrenDisplay(false);
-            return;
+            FTreeNode* CurrentNode = CurrentTuple.Key;
+            int32 TheDepth = CurrentTuple.Value;
+
+            // 1. 超过目标深度：直接跳过（无需入队子节点）
+            if (TheDepth > TargetDepth)
+            {
+                continue;
+            }
+
+            // 2. 等于目标深度：拷贝节点数据到输出数组（不含父/子引用）
+            if (TheDepth == TargetDepth)
+            {
+                OutNodeDatas.Add(CurrentNode->GetPOIData());
+                continue; //目标深度节点无需入队子节点
+            }
+
+            // 3. 小于目标深度：子节点入队，继续遍历
+            if (CurrentNode && TheDepth < TargetDepth)
+            {
+                for (FTreeNode* Child : CurrentNode->Children)
+                {
+                    if (Child)
+                    {
+                        NodeQueue.Enqueue(MakeTuple(Child, Child->GetDepth()));
+                    }
+                }
+            }
         }
     }
-    
+    return true;
+}
+
+void UQuadtreeSceneComponent::CalcDepth(int level)
+{
+    if (level < 10)
+    {
+        CurrentDepth = 1;
+    }
+    else if (level >= 10 && level < 11)
+    {
+        CurrentDepth = 2;
+    }
+    else if (level >= 11 && level < 12)
+    {
+        CurrentDepth = 3;
+    }
+    else if (level >= 12 && level < 13)
+    {
+        CurrentDepth = 4;
+    }
+    else if (level >= 13 && level < 18)
+    {
+        CurrentDepth = 5;
+    }
 }

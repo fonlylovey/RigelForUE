@@ -463,7 +463,9 @@ void ARigelPawn::CalcGeoLocation()
         float B = 0.00007096758;
         float C = 91610.74;
         float D = -40467.74;
-        int level = FMath::RoundToInt(D + (A - D) / (1 + FMath::Pow(FMath::Max(0, GeoLocation.Z * 0.8) / C, B)));
+        int level = FMath::RoundToInt(D + (A - D) / (1 + FMath::Pow(FMath::Max(0, GeoLocation.Z) / C, B)));
+        level = FMath::Min(level, 18);
+        GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::FormatAsNumber(level));
         if (level != MapLevel)
         {
             OnMapLevelChange.Broadcast(MapLevel, level);
