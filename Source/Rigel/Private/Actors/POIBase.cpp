@@ -8,7 +8,7 @@
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/Character.h"
-
+#include "WebAPI/RigelPOIWidget.h"
 #if WITH_EDITOR
 #include "Editor/UnrealEd/Public/EditorViewportClient.h"
 #endif
@@ -44,27 +44,42 @@ void APOIBase::OnClickedActorEvent_Implementation()
 
 void APOIBase::OnClickedComonetEvent_Implementation()
 {
-    
+    GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Pick UMG"));
 }
 
 void APOIBase::UpdateJson_Implementation()
 {
+   
+}
+
+void APOIBase::MakeListenerJson_Implementation()
+{
+   
+   
 }
 
 // Called when the game starts or when spawned
 void APOIBase::BeginPlay()
 {
 	Super::BeginPlay();
-    /*
+    UUserWidget* umgWidget = WidgetComponent->GetWidget();
+    URigelPOIWidget* poiWidget = Cast<URigelPOIWidget>(umgWidget);
+
+    if (umgWidget && poiWidget)
+    {
+        poiWidget->OnUMGClicked.BindUFunction(this,"OnClickedActorEvent");
+    }
+        /*
      if (!WidgetComponent->OnClicked.IsBound())
      {
-         WidgetComponent->OnClicked.AddDynamic(this, &APOIBase::OnClickedComonetEvent);
+         this, & APOIBase::OnClickedComonetEvent
+         WidgetComponent->OnClicked.Add();
      }
-    if (!OnClicked.IsBound())
-    {
-        OnClicked.AddDynamic(this, &APOIBase::OnClickedActorEvent);
-    }
-    */
+  if (!OnClicked.IsBound())
+      {
+          OnClicked.AddDynamic(this, &APOIBase::OnClickedActorEvent);
+      }
+      */
     //bIsSpatiallyLoaded = 0;
 }
 

@@ -16,10 +16,11 @@ public:
     ARigelPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
     //����Web�˷��͵���Ϣ
-    UFUNCTION()
+    UFUNCTION(BlueprintCallable)
     void OnMessageByWeb(const FString& Data);
 
-    //��web�˷�����Ϣ
+    //
+    UFUNCTION(BlueprintCallable)
     void SendMessageToWeb(const FString& Data);
 
 protected:

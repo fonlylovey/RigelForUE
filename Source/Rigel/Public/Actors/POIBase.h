@@ -25,6 +25,9 @@ public:
 
     UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
     void UpdateJson();
+
+    UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+    void MakeListenerJson();
 protected:
 	// Called when, the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -53,6 +56,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EarthBuilder")
     FString JsonValue = TEXT("");
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EarthBuilder")
+    FString ListenerJson = TEXT("");
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EarthBuilder")
     float MaxScale = 100.0;
