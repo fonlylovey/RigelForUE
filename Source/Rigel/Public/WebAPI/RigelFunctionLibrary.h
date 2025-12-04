@@ -24,6 +24,9 @@ public:
     static void FlyToUE(const FJsonLibraryObject& Value);
 
     UFUNCTION(BlueprintCallable)
+    static void FlyToGeopoint(const FJsonLibraryObject& Value);
+
+    UFUNCTION(BlueprintCallable)
     static void FlyToActor(const FJsonLibraryObject& Value);
 
     UFUNCTION(BlueprintCallable)

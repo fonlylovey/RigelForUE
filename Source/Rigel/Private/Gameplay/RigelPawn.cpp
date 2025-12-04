@@ -14,6 +14,7 @@
 #include "Math/UnrealPlatformMathSSE.h"
 #include "CesiumMetadataPickingBlueprintLibrary.h"
 #include "Actors/POIBase.h"
+#include "GeoReferencingSystem.h"
 
 // Sets default values
 ARigelPawn::ARigelPawn(const FObjectInitializer& ObjectInitializer)
@@ -153,6 +154,16 @@ void ARigelPawn::FlyToViewpoint(float time, const FViewpoint& Viewpoint)
 void ARigelPawn::FlyToUE(float time, const FVector& Location, const FRotator& Rotation)
 {
     ViewpointComponent->RoamingToUE(time, Location, Rotation);
+}
+
+void ARigelPawn::FlyToGeopoint(FVector Location, FVector Offset, float Time)
+{
+    auto geoRef = ACesiumGeoreference::GetDefaultGeoreference(GetWorld());
+    if (geoRef != nullptr)
+    {
+        FVector unrealLocation = geoRef->TransformLongitudeLatitudeHeightPositionToUnreal(FVector(Location.X, Location.Y, 0));
+        ViewpointComponent->RoamingToLocation(unrealLocation, Offset, Location.Z, Time);
+    }
 }
 
 void ARigelPawn::FlyToActor(float time, const AActor* actor)

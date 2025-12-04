@@ -51,6 +51,9 @@ public:
     UFUNCTION(BlueprintCallable)
     void FlyToUE(float time, const FVector& Location, const FRotator& Rotation);
 
+    UFUNCTION(BlueprintCallable)
+    void FlyToGeopoint(FVector Location, FVector Offset, float Time);
+
 protected:
 
     void Zoom(const FInputActionValue& Value);

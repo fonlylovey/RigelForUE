@@ -36,7 +36,8 @@ public class Rigel : ModuleRules
                 "WebUI",
                 "JsonLibrary",
                 "InputCore",
-                "CesiumRuntime"
+                "CesiumRuntime",
+                "InVideo"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -55,7 +56,8 @@ public class Rigel : ModuleRules
                 "VectorLoader",
                 "GDALForUnreal",
                 "JsonLibrary"
-				// ... add private dependencies that you statically link with here ...	
+				// ... add private dependencies tha
+                // t you statically link with here ...	
 			}
 			);
 		

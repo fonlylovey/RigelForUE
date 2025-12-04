@@ -60,6 +60,23 @@ void URigelFunctionLibrary::FlyToUE(const FJsonLibraryObject& Value)
     }
 }
 
+void URigelFunctionLibrary::FlyToGeopoint(const FJsonLibraryObject& Value)
+{
+    FVector Location, Offset;
+    Location.X = Value.GetFloat(TEXT("X"));
+    Location.Y = Value.GetFloat(TEXT("Y"));
+    Location.Z = Value.GetFloat(TEXT("Z"));
+    Offset.X = Value.GetFloat(TEXT("OffsetX"));
+    Offset.Y = Value.GetFloat(TEXT("OffsetY"));
+    Offset.Z = Value.GetFloat(TEXT("OffsetZ"));;
+    float time = Value.GetFloat(TEXT("Time"));
+    ARigelPawn* rigelPawn = Cast<ARigelPawn>(UGameplayStatics::GetPlayerPawn(GWorld, 0));
+    if (rigelPawn != nullptr)
+    {
+        rigelPawn->FlyToGeopoint(Location, Offset, time);
+    }
+}
+
 void URigelFunctionLibrary::FlyToActor(const FJsonLibraryObject& Value)
 {
     float time = Value.GetFloat(TEXT("Time"));

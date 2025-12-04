@@ -221,13 +221,10 @@ void ARigelLevelEditor::ClearSelect()
 
 void ARigelLevelEditor::SendMessageToWeb(const FString& Function, const FJsonLibraryValue& Data)
 {
-#if WITH_EDITOR
-
     if (WebWidget != nullptr)
     {
-        WebWidget->SendMessage(Function, Data);
+        WebWidget->SendMessageToWebUI(Function, Data);
     }
-#endif
 
     ARigelPlayerController* rigelController = Cast<ARigelPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
     if (IsValid(rigelController))
@@ -304,12 +301,15 @@ ASplinePathMesh* ARigelLevelEditor::CreateSplineActor(const FString& ActorName)
 
 void ARigelLevelEditor::ClearRuntimeActors()
 {
-    for (auto pair : RuntimeMap)
+    if (!RuntimeMap.IsEmpty())
     {
-        pair.Value->SetActorHiddenInGame(true);
-        pair.Value->Destroy();
+        for (auto pair : RuntimeMap)
+        {
+            pair.Value->SetActorHiddenInGame(true);
+            pair.Value->Destroy();
+        }
+        RuntimeMap.Empty();
     }
-    RuntimeMap.Empty();
 }
 
 void ARigelLevelEditor::LoadHtmlUrl()

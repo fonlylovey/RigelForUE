@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "Math/Box2D.h"
 #include "Containers/Array.h"
+#include "JsonLibraryObject.h"
+#include "JsonLibraryValue.h"
 #include "TreeNode.generated.h"
 
 // POI数据结构（存储经纬度和属性）
@@ -32,7 +34,7 @@ struct RIGEL_API FPOIData
     FString EventType = TEXT("");
 
     UPROPERTY(BlueprintReadWrite, Category = "POI")
-    FString JsonString = TEXT("");
+    FJsonLibraryObject JsonObject;
 
     // 构造函数
     FPOIData() = default;

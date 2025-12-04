@@ -50,6 +50,8 @@ public:
     void RoamingToActor(float time, const AActor* Actor);
 
     void RoamingToUE(float time, const FVector& Location, const FRotator& Rotation);
+
+    void RoamingToLocation(FVector Location, FVector Offset, int Height, float Time);
 public:
 
 

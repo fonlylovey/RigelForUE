@@ -38,7 +38,7 @@ void APOIBase::OnClickedActorEvent_Implementation()
         );
         FJsonLibraryValue value = FJsonLibraryValue::Parse(JsonString);
         ARigelLevelEditor::RigelLevel()->SendMessageToWeb(TEXT("ListenerUEMessage"), value);
-
+        GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, *JsonString);
     }
 }
 

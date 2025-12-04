@@ -41,6 +41,7 @@ void URigelAPISubsystem::Initialize(FSubsystemCollectionBase& Collection)
     Register(TEXT("UpdateTerrainURL"), &URigelFunctionLibrary::UpdateTerrainURL);
     Register(TEXT("AddWMSServer"), &URigelFunctionLibrary::AddWMSServer);
     Register(TEXT("AddWMTSServer"), &URigelFunctionLibrary::AddWMTSServer);
+    Register(TEXT("FlyToGeopoint"), &URigelFunctionLibrary::FlyToGeopoint);
 
 
     FString strClass = TEXT("/Rigel/Blueprints/BP_RigelInterface.BP_RigelInterface_C");

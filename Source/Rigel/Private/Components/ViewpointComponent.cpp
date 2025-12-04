@@ -170,3 +170,51 @@ void UViewpointComponent::RoamingToUE(float time, const FVector& Location, const
     }
 }
 
+void UViewpointComponent::RoamingToLocation(FVector Location, FVector Offset, int Height, float Time)
+{
+    AActor* owner = GetOwner();
+    if (!owner || !PlayerController)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("FlyToUE: Owner or PlayerController is null!"));
+        return;
+    }
+
+    // 1. 记录起始变换（与RoamingToUE保持一致）
+    StartTransform = owner->GetTransform();
+
+    // 2. 计算相机最终位置：以目标位置为基准，保持高度距离 + 水平偏移
+    // 核心逻辑：相机在目标位置的水平平面（Z轴对齐）上方keepHeight距离处，叠加水平偏移
+    FVector finalCameraLocation = Location;
+    finalCameraLocation.Z += Height; // 保持与目标位置的高度差（垂直距离）
+    finalCameraLocation += Offset; // 水平方向偏移（左右/前后，不影响高度）
+
+    // 3. 计算相机朝向：始终指向目标位置（虚拟Actor的中心）
+    FRotator lookAtRotation = (Location - finalCameraLocation).Rotation();
+    // 限制俯仰角（避免相机翻转，确保自然视角）
+    lookAtRotation.Pitch = FMath::Clamp(lookAtRotation.Pitch, -85.f, -5.f); // 建议俯视角度（可调整范围）
+    lookAtRotation.Roll = 0.0f; // 强制水平翻滚，避免倾斜
+
+    // 4. 设置目标变换（与RoamingToUE结构完全一致）
+    TargetTransform.SetLocation(finalCameraLocation);
+    TargetTransform.SetRotation(FQuat::MakeFromRotator(lookAtRotation));
+    Duration = Time;
+
+    // 5. 复用RoamingToUE的动画控制逻辑
+    if (Duration <= 0.0f)
+    {
+        // 无动画时间，直接跳转到位
+        Runtime = 0.0f;
+        Playing = false;
+        SetComponentTickEnabled(false);
+
+        PlayerController->SetControlRotation(lookAtRotation);
+        GetOwner()->SetActorTransform(TargetTransform);
+    }
+    else
+    {
+        // 启动平滑飞行动画（Tick驱动插值）
+        Runtime = 0.0f;
+        Playing = true;
+        SetComponentTickEnabled(true);
+    }
+}

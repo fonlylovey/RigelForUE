@@ -48,8 +48,8 @@ void ASplinePathMesh::UpdateSplineMesh()
             {
                 if (Spline->IsClosedLoop())
                 {
-                    Spline->GetLocationAndTangentAtSplinePoint(i, pointA, tangentA, ESplineCoordinateSpace::Local);
-                    Spline->GetLocationAndTangentAtSplinePoint(0, pointB, tangentB, ESplineCoordinateSpace::Local);
+                    Spline->GetLocationAndTangentAtSplinePoint(i, pointA, tangentA, ESplineCoordinateSpace::World);
+                    Spline->GetLocationAndTangentAtSplinePoint(0, pointB, tangentB, ESplineCoordinateSpace::World);
                 }
                 else
                 {
@@ -58,8 +58,8 @@ void ASplinePathMesh::UpdateSplineMesh()
             }
             else
             {
-                Spline->GetLocationAndTangentAtSplinePoint(i, pointA, tangentA, ESplineCoordinateSpace::Local);
-                Spline->GetLocationAndTangentAtSplinePoint(i + 1, pointB, tangentB, ESplineCoordinateSpace::Local);
+                Spline->GetLocationAndTangentAtSplinePoint(i, pointA, tangentA, ESplineCoordinateSpace::World);
+                Spline->GetLocationAndTangentAtSplinePoint(i + 1, pointB, tangentB, ESplineCoordinateSpace::World);
             }
             
 
@@ -69,6 +69,7 @@ void ASplinePathMesh::UpdateSplineMesh()
             if (SplineMaterial != nullptr)
             {
                 segmentMaterial = UMaterialInstanceDynamic::Create(SplineMaterial, this);
+                
                 float UVSatrt = distanceStrat / totalLength;
                 float UVEnd = distanceEnd / totalLength;
                 segmentMaterial->SetScalarParameterValue("Start", UVSatrt);

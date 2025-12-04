@@ -56,8 +56,7 @@ void UWebWidget::OnInterfaceEvent(const FName Name, FJsonLibraryValue Data, FWeb
     subsystem->Invoke(Name.ToString(), DataObj);
 }
 
-
-void UWebWidget::SendMessage(const FString& Function, const FJsonLibraryValue& Data)
+void UWebWidget::SendMessageToWebUI(const FString& Function, const FJsonLibraryValue& Data)
 {
     WebInterface->Call(Function, Data);
 }
