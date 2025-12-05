@@ -94,6 +94,8 @@ public:
 
     void AddWMTSServer(const FString& LayerID, const FString& BaseUrl, const ServiceOption& option);
 
+    UFUNCTION(BlueprintCallable, Category = "Rigel")
+    UWebWidget* GetWebUI() { return WebWidget; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

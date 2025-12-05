@@ -36,8 +36,7 @@ public class Rigel : ModuleRules
                 "WebUI",
                 "JsonLibrary",
                 "InputCore",
-                "CesiumRuntime",
-                "InVideo"
+                "CesiumRuntime"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

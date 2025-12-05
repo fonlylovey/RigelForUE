@@ -68,10 +68,6 @@
         {
             "Name": "WebUI",
             "Enabled": true
-        },
-        {
-            "Name": "InVideo",
-            "Enabled": true
         }
     ],
   "SupportedTargetPlatforms": null
