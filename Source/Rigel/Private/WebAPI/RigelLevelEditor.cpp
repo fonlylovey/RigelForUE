@@ -27,6 +27,7 @@ void ARigelLevelEditor::BeginPlay()
 {
     Super::BeginPlay();
     InitOption();
+    LoadHtmlUrl();
 }
 
 // Called every frame
@@ -83,7 +84,7 @@ void ARigelLevelEditor::InitOption()
     GConfig->GetString(TEXT("WEB"), TEXT("HtmlUrl"), HtmlURL, ConfigPath);
     GConfig->GetString(TEXT("GISServer"), TEXT("IP"), GISServerIP, ConfigPath);
     GConfig->GetInt(TEXT("StreamMode"), TEXT("StreamMode"), StreamMode, ConfigPath);
-    GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, FString::FromInt(StreamMode));
+    GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, *HtmlURL);
 }
 
 AActor* ARigelLevelEditor::GetActor(const FString& Name)
@@ -125,6 +126,7 @@ void ARigelLevelEditor::RemoveRuntimeActor(const FString& Name)
         actor->Destroy(true);
     }
 }
+
 AActor* ARigelLevelEditor::FindActor(const FString& Name)
 {
     AActor* actor = GetActor(Name);

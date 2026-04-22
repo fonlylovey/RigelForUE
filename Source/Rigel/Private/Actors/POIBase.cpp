@@ -169,7 +169,7 @@ void APOIBase::Tick(float DeltaTime)
         }
         scale = FMath::Clamp(scale, 1, MaxScale);
         RootComponent->SetWorldScale3D(FVector(scale, scale, scale));
-        WidgetComponent->SetRelativeLocation(InitPostion);
+        //WidgetComponent->SetRelativeLocation(InitPostion);
         
     }
 }

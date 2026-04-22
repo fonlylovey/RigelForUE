@@ -20,13 +20,13 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Rigel")
     static URigelAPISubsystem* RigelAPISubsystem();
     
-    //�ڳ�ʼ��ʱע�����к���
+    //
     virtual void Initialize(FSubsystemCollectionBase& Collection);
 
-    //ȡ����ʼ��ʱ�������ע�ắ��
+    //
     virtual void Deinitialize();
 
-    //ע��C++����
+    //
     typedef TFunction<void(const FJsonLibraryObject& DataObj)> Function;
     void Register(const FString& Name, Function InFunction);
 
@@ -34,11 +34,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Rigel")
     void Register(const FString& FunctionName, FRigelAPIDelegate InDelegate);
 
-    //���ú��� ��������һ��������
+    //
     //{"Name":"SetVisible", "Data": {"ID":actor_1", "Visible": true}}
+    UFUNCTION(BlueprintCallable, Category = "Rigel")
     void Invoke(const FString& JsonData);
 
-    //web UIһ��������
+    //
     void Invoke(const FString& FunName, const FJsonLibraryObject& DataObj);
 
 private:

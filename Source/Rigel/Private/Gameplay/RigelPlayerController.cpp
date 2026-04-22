@@ -11,8 +11,6 @@ ARigelPlayerController::ARigelPlayerController(const FObjectInitializer& ObjectI
 
 void ARigelPlayerController::OnMessageByWeb(const FString& Data)
 {
-    //{Name:SetWeather,"Param": "Sunny"}
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, Data);
     URigelAPISubsystem::RigelAPISubsystem()->Invoke(Data);
 }
 

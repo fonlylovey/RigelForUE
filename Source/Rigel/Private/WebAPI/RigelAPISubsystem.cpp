@@ -76,10 +76,16 @@ void URigelAPISubsystem::Register(const FString& Name, FRigelAPIDelegate InDeleg
 void URigelAPISubsystem::Invoke(const FString& JsonData)
 {
     //初步解析json
+    ////"{\"Name\":\"SetActorVisible\",\"Data\":{\"Name\":\"Device_GZ_SPJK_80\",\"Visible\":true}}"
     FJsonLibraryObject jsonRootObj = FJsonLibraryObject::Parse(JsonData);
+    if (!jsonRootObj.IsValid()) {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("字符串反序列化失败"));
+    }
     FString strName = jsonRootObj.GetString(TEXT("Name"));
     FJsonLibraryObject dataObj = jsonRootObj.GetObject(TEXT("Data"));
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, strName);
     Invoke(strName, dataObj);
+
 }
 
 void URigelAPISubsystem::Invoke(const FString& FunName, const FJsonLibraryObject& DataObj)
@@ -88,11 +94,13 @@ void URigelAPISubsystem::Invoke(const FString& FunName, const FJsonLibraryObject
     //AsyncTask(ENamedThreads::GameThread, {});
     if (FunctionMap.Contains(FunName))
     {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("调用函数成功：" + FunName));
         Function function = FunctionMap[FunName];
         function(DataObj);
     }
     else if (BlueprintMap.Contains(FunName))
     {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("调用函数成功：" + FunName));
         FRigelAPIDelegate delegate = BlueprintMap[FunName];
         delegate.Execute(DataObj);
     }
