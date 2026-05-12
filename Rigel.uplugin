@@ -44,14 +44,12 @@
             ]
         },
         {
-            "Name": "PixelStreaming",
-            "Enabled": true,
-            "SupportedTargetPlatforms": null
+            "Name": "PixelStreaming2",
+            "Enabled": true
         },
         {
             "Name": "EnhancedInput",
-            "Enabled": true,
-            "SupportedTargetPlatforms": null
+            "Enabled": true
         },
         {
             "Name": "GeoReferencing",
@@ -61,18 +59,14 @@
             "Name": "ProceduralMeshComponent",
             "Enabled": true
         },
-        {
-            "Name": "PCG",
-            "Enabled": true
-        },
-        {
-            "Name": "WebUI",
-            "Enabled": true
-        },
-        {
-            "Name": "InVideo",
-            "Enabled": true
-        }
+      {
+        "Name": "PCG",
+        "Enabled": true
+      },
+      {
+        "Name": "WebUI",
+        "Enabled": true
+      }
     ],
   "SupportedTargetPlatforms": null
 }

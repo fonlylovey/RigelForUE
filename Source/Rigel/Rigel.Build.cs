@@ -37,7 +37,6 @@ public class Rigel : ModuleRules
                 "JsonLibrary",
                 "InputCore",
                 "CesiumRuntime",
-                "InVideo"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -50,7 +49,7 @@ public class Rigel : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-                "PixelStreaming",
+                "PixelStreaming2",
                 "MeshDescription",
                 "StaticMeshDescription",
                 "VectorLoader",

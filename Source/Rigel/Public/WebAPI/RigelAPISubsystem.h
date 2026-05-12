@@ -3,10 +3,9 @@
 #include "CoreMinimal.h"
 #include "JsonLibraryValue.h"
 #include "RigelInterface.h"
-#include "PixelStreamingInputComponent.h"
 #include "RigelAPISubsystem.generated.h"
 /*
-* ����UE�˵�API�ӿ�
+* 
 */
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FRigelAPIDelegate, const FJsonLibraryObject&, Value);
@@ -48,8 +47,6 @@ private:
 
     UPROPERTY()
     URigelInterface* RigelAPI;
-
-    UPixelStreamingInput* PixelStreaming;
 
     TMap<FString, Function> FunctionMap;
 

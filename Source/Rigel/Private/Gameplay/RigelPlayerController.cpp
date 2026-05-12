@@ -4,22 +4,12 @@
 ARigelPlayerController::ARigelPlayerController(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
 {
-    PixelStreamingInput = CreateDefaultSubobject<UPixelStreamingInput>(TEXT("PixelStreamingInput"));
-    PixelStreamingInput->OnInputEvent.AddDynamic(this, &ARigelPlayerController::OnMessageByWeb);
     this->bEnableClickEvents = true;
 }
 
 void ARigelPlayerController::OnMessageByWeb(const FString& Data)
 {
     URigelAPISubsystem::RigelAPISubsystem()->Invoke(Data);
-}
-
-void ARigelPlayerController::SendMessageToWeb(const FString& Data)
-{
-    if (PixelStreamingInput != nullptr)
-    {
-        PixelStreamingInput->SendPixelStreamingResponse(Data);
-    }
 }
 
 void ARigelPlayerController::BeginPlay()
