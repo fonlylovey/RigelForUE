@@ -80,6 +80,9 @@ protected:
 
     void MoveRight(const FInputActionValue& Value);
 
+    //统一鼠标拖拽事件（合并XY两个方向）
+    void OnMouseMove(const FInputActionValue& Value);
+
     //键盘控制移动，鼠标旋转会被移动干扰，所以单独判断是鼠标左键按下才会移动，键盘的移动单独判断，实现与鼠标一样
     void MoveForward_Key(const FInputActionValue& Value);
     void MoveRight_Key(const FInputActionValue& Value);
@@ -108,12 +111,12 @@ public:
     class UInputMappingContext* DefaultMappingContext;
 
     //水平方向移动
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
-    class UInputAction* MoveForwardAction;
+    //UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
+    //class UInputAction* MoveForwardAction;
 
     //水平方向移动
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
-    class UInputAction* MoveRightAction;
+    //UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
+    //class UInputAction* MoveRightAction;
 
     ////键盘WS竖直方向移动
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
@@ -138,6 +141,10 @@ public:
     //竖直上下旋转
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
     class UInputAction* PitchRotationAction;
+
+    //鼠标拖拽（统一XY轴）
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
+    class UInputAction* MouseMoveAction;
 
     //鼠标左键按下
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rigel|InhancedInput")
@@ -181,8 +188,11 @@ private:
     double Distance = 0.0;
     bool IsMouseLeft = false;
     bool IsMouseRight = false;
-    //鼠标当前点击时和场景交点的世界坐标
+    //鼠标当前点击时和场景交点的世界坐标（左键拖拽的锚点 P0）
     FVector PickWorldLocation;
+
+    //拖拽平面：过 P0，法线向上（用于平面约束平移 Pan）
+    FPlane DragPlane;
 
     //实时计算当前经纬度坐标
     FVector GeoLocation;

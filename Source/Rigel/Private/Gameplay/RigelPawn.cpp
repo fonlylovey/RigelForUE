@@ -68,8 +68,7 @@ void ARigelPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputCom
         EnhancedInputComponent->BindAction(LeftMouseReleaseAction, ETriggerEvent::Triggered, this, &ARigelPawn::OnLeftMouseRelease);
         EnhancedInputComponent->BindAction(RightMousePressedAction, ETriggerEvent::Triggered, this, &ARigelPawn::OnRightMousePressed);
         EnhancedInputComponent->BindAction(RightMouseReleaseAction, ETriggerEvent::Triggered, this, &ARigelPawn::OnRightMouseRelease);
-        EnhancedInputComponent->BindAction(MoveForwardAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveForward);
-        EnhancedInputComponent->BindAction(MoveRightAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveRight);
+        EnhancedInputComponent->BindAction(MouseMoveAction, ETriggerEvent::Triggered, this, &ARigelPawn::OnMouseMove);
         EnhancedInputComponent->BindAction(KeyMoveForwardAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveForward_Key);
         EnhancedInputComponent->BindAction(KeyMoveRightAction, ETriggerEvent::Triggered, this, &ARigelPawn::MoveRight_Key);
         EnhancedInputComponent->BindAction(KeyUpDown, ETriggerEvent::Triggered, this, &ARigelPawn::MoveUp_Key);
@@ -298,7 +297,17 @@ void ARigelPawn::Focus(const FInputActionValue& Value)
 void ARigelPawn::OnLeftMousePressed(const FInputActionValue& Value)
 {
     IsMouseLeft = true;
+
+    // 1. 射线检测获取鼠标下方的三维点 P0，作为拖拽过程中被"抓住"的锚点
     PickWorldLocation = PickLocation();
+    if (PickWorldLocation.IsZero())
+    {
+        return;
+    }
+
+    // 2. 定义拖拽平面：过 P0，法线为世界向上（保持水平平移，无垂直漂移）
+    DragPlane = FPlane(PickWorldLocation, FVector::UpVector);
+
     if (FocusActor != nullptr)
     {
         FocusActor->SetActorHiddenInGame(false);
@@ -356,57 +365,41 @@ void ARigelPawn::OnRightMouseRelease(const FInputActionValue& Value)
 
 void ARigelPawn::MoveForward(const FInputActionValue& Value)
 {
-    if (IsMouseLeft)
-    {
-        FVector PawnLocation = GetActorLocation();
-        FVector MoveDir = PickWorldLocation - PawnLocation;
-        FVector CurrentMousrLocation = PickLocation();
-        FVector moveVector = CurrentMousrLocation - PawnLocation;
-        float speed = MoveDir.Z / 20;
-        if (SpeedCurve != nullptr)
-        {
-            speed = SpeedCurve->GetFloatValue(PawnLocation.Z / 100.0);
-        }
-        FloatingMovement->MaxSpeed = speed;
-        FVector2D delta = Value.Get<FVector2D>();
-
-        const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YanRotation(0, Rotation.Yaw, 0);
-
-        const FVector ForwardDirection = FRotationMatrix(YanRotation).GetUnitAxis(EAxis::X);
-
-        AddActorWorldOffset(ForwardDirection * delta.X * speed);
-        CalcGeoLocation();
-    }
-    
-} 
+    // 不再处理鼠标拖拽，保留给键盘使用
+}
 
 void ARigelPawn::MoveRight(const FInputActionValue& Value)
 {
-    if (IsMouseLeft)
+    // 不再处理鼠标拖拽，保留给键盘使用
+}
+
+// 左键拖拽：平面约束拖拽（Pan）——拖拽过程中 P0 始终跟随鼠标指针移动
+void ARigelPawn::OnMouseMove(const FInputActionValue& Value)
+{
+    if (!IsMouseLeft || PickWorldLocation.IsZero())
     {
-        FVector PawnLocation = GetActorLocation();
-        FVector MoveDir = PickWorldLocation - PawnLocation;
-        FVector CurrentMousrLocation = PickLocation();
-        FVector moveVector = CurrentMousrLocation - PawnLocation;
-
-        float speed = MoveDir.Z / 20;
-        if (SpeedCurve != nullptr)
-        {
-            speed = SpeedCurve->GetFloatValue(PawnLocation.Z / 100.0);
-        }
-
-        FloatingMovement->MaxSpeed = speed;
-        FVector2D delta = Value.Get<FVector2D>();
-
-        const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YanRotation(0, Rotation.Yaw, 0);
-
-        const FVector RightDirection = FRotationMatrix(YanRotation).GetUnitAxis(EAxis::Y);
-
-        AddActorWorldOffset(RightDirection * delta.X * speed * -1);
-        CalcGeoLocation();
+        return;
     }
+
+    APlayerController* PlayerController = Cast<APlayerController>(Controller);
+    if (PlayerController == nullptr) return;
+
+    // 当前鼠标屏幕位置反算世界射线
+    FVector RayOrigin, RayDir;
+    if (!PlayerController->DeprojectMousePositionToWorld(RayOrigin, RayDir)) return;
+
+    // 计算当前鼠标射线与拖拽平面（过 P0，法线向上）的交点
+    FVector CurrentPlaneHit = FMath::RayPlaneIntersection(RayOrigin, RayDir, DragPlane);
+    if (CurrentPlaneHit.IsNearlyZero()) return;
+
+    // 位移差 = 当前交点 - 锁定锚点
+    FVector Delta = CurrentPlaneHit - PickWorldLocation;
+
+    // 将 Pawn 位置反向移动相同的位移（场景相对移动）
+    FVector NewLocation = GetActorLocation() - Delta;
+    SetActorLocation(NewLocation, false);
+
+    CalcGeoLocation();
 }
 
 void ARigelPawn::MoveForward_Key(const FInputActionValue& Value)
@@ -485,4 +478,3 @@ void ARigelPawn::CalcGeoLocation()
     }
 
 }
-
