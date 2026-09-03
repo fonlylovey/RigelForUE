@@ -8,7 +8,7 @@
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/Character.h"
-#include "WebAPI/RigelPOIWidget.h"
+#include "Widgets//RigelPOIWidget.h"
 #if WITH_EDITOR
 #include "Editor/UnrealEd/Public/EditorViewportClient.h"
 #endif

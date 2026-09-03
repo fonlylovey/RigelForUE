@@ -39,7 +39,7 @@ namespace UnrealBuildTool.Rules
 
                 PublicDefinitions.Add("WIN32");
                 //PublicDefinitions.Add("__clang_major__=0");
-                CppStandard = CppStandardVersion.Cpp17;
+                CppStandard = CppStandardVersion.Latest;
 
             }
 			else if (Target.Platform == UnrealTargetPlatform.Linux)
