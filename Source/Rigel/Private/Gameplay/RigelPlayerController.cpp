@@ -16,3 +16,5 @@ void ARigelPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 }
+
+// PlayerController no longer binds Enhanced Input; RigelPawn handles its own input mapping and bindings.
